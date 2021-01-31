@@ -5,10 +5,9 @@ namespace Web_API.Models
    
     public class DontGetSpicyContext : DbContext
     {
-        //db set
-
-    
-        public DontGetSpicyContext(DbContextOptions o):base(o)
+        public DbSet<Korisnik> Korisnici {get;set;}    
+        public DbSet<Igra> Igre {get;set;}
+        public DontGetSpicyContext(DbContextOptions options):base(options)
         {
 
         }

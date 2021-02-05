@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DontGetSpicy;
+using DontGetSpicy.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -12,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Web_API.Models;
+
 
 namespace Web_API
 {
@@ -33,7 +35,12 @@ namespace Web_API
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Web_API", Version = "v1" });
+            });services.AddDistributedMemoryCache();
+            services.AddSession(opts => 
+            {
+                opts.Cookie.HttpOnly=true;
             });
+            
             services.AddDbContext<DontGetSpicyContext>(options => 
             {
                 //lambda expr koji omogucava da nad options nesto radimo i njime manipulisemo
@@ -57,13 +64,16 @@ namespace Web_API
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Web_API v1"));
             }
+          
+                
 
+           
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

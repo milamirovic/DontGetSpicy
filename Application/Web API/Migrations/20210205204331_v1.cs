@@ -2,7 +2,7 @@
 
 namespace Web_API.Migrations
 {
-    public partial class V1 : Migration
+    public partial class v1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -29,28 +29,28 @@ namespace Web_API.Migrations
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StanjeIgre = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    kreatorIgreID = table.Column<int>(type: "int", nullable: true),
                     crveniIgracId = table.Column<int>(type: "int", nullable: false),
                     plaviIgracId = table.Column<int>(type: "int", nullable: false),
                     zeleniIgracId = table.Column<int>(type: "int", nullable: false),
-                    zutiIgracId = table.Column<int>(type: "int", nullable: false),
-                    KorisnikID = table.Column<int>(type: "int", nullable: true)
+                    zutiIgracId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Igra", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Igra_Korisnik_KorisnikID",
-                        column: x => x.KorisnikID,
+                        name: "FK_Igra_Korisnik_kreatorIgreID",
+                        column: x => x.kreatorIgreID,
                         principalTable: "Korisnik",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Igra_KorisnikID",
+                name: "IX_Igra_kreatorIgreID",
                 table: "Igra",
-                column: "KorisnikID");
+                column: "kreatorIgreID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

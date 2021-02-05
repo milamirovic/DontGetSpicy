@@ -1,22 +1,23 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using DontGetSpicy;
+using DontGetSpicy.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Web_API.Models;
+using Newtonsoft.Json;
 
-namespace Web_API.Controllers
+
+
+namespace DontGetSpicy.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class DontGetSpicyController : ControllerBase
+    public class KorisnikController : ControllerBase
     {
-        private readonly ILogger<DontGetSpicyController> _logger;
+      
         public DontGetSpicyContext Context { get;set; }
 
-        public DontGetSpicyController(DontGetSpicyContext context)
+        public KorisnikController(DontGetSpicyContext context)
         {
             Context = context;
         }
@@ -54,7 +55,7 @@ namespace Web_API.Controllers
             await Context.SaveChangesAsync();
         }
 
-        [Route("UpisiIgricu/{idKorisnika}")]
+        /*[Route("UpisiIgricu/{idKorisnika}")]
         [HttpPost]
         public async Task UpisiIgricu(int idKorisnika, [FromBody] Igra igrica)
         {
@@ -65,5 +66,9 @@ namespace Web_API.Controllers
             await Context.SaveChangesAsync();
             
         }
+        */
+        
+       
+       
     }
 }

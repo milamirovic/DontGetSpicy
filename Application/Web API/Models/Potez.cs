@@ -1,6 +1,7 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-namespace Web_API.Models
+namespace DontGetSpicy.Models
 {
     public class Potez
     {
@@ -10,6 +11,7 @@ namespace Web_API.Models
         [Range(0,6)]
        public int vrKocke { get; set; } 
        public Figura izabranaFigura { get; set; }
+       public DateTime vremeOdigravanja { get; set; }
     }
 
 }

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Web_API.Models
+namespace DontGetSpicy.Models
 {
    
     public class DontGetSpicyContext : DbContext
@@ -10,6 +10,10 @@ namespace Web_API.Models
         public DontGetSpicyContext(DbContextOptions options):base(options)
         {
 
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+           
         }
     }
 }

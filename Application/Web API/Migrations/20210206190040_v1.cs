@@ -15,7 +15,8 @@ namespace Web_API.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BrojPobeda = table.Column<int>(type: "int", nullable: false),
-                    Slika = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Slika = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    username = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

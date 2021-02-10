@@ -1,12 +1,15 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DontGetSpicy;
 using DontGetSpicy.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-
-
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using DontGetSpicy.DataProvider;
+using DontGetSpicy.JWT;
 
 namespace DontGetSpicy.Controllers
 {
@@ -21,7 +24,83 @@ namespace DontGetSpicy.Controllers
         {
             Context = context;
         }
+       
+        [AllowAnonymous]
+        [Route("Login")]
+        [HttpPost]
+        public async Task<IActionResult> Login(string email,string password)
+        {
+            Korisnik loginKorisnik=await KorisnikProvider.GetKorisnik(Context,email,password);
+            if(loginKorisnik==null)
+            return NotFound();
+           
+            var tokenStr=JWTGenerator.GenerateLoginToken(loginKorisnik);
+          
+            return Ok(new {tokenStr=tokenStr,userData=loginKorisnik});
+        }
+        [Authorize]
+        [Route("PodaciKorisnika")]
+        [HttpGet]
+        public async Task<IActionResult> PodaciKorisnika()
+        {   
+            //var identity=HttpContext.User.Identity as ClaimsIdentity;
+            //IList<Claim> claims=identity.Claims.ToList();
+           // var username=claims[0].Value;
+            
+            string email=User.FindFirstValue("email");
+            if(email==null) return BadRequest();
+            return Ok(new {korisnik=await KorisnikProvider.GetKorisnik(Context,email)});
+          
 
+        }
+        [Authorize]
+        [Route("IgreKorisnika")]
+        [HttpGet]
+        public async Task<IActionResult> IgreKorisnika()
+        {  
+            //samo pauzirane igre
+            string email=User.FindFirstValue("email");
+            if(email==null) return BadRequest();
+            return Ok(new {igre=await KorisnikProvider.GetKorisnikIgre(Context,email)});
+    
+        }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+         [Route ("UpisiKorisnika")]
+        [HttpPost]
+        public async Task UpisiKorisnika([FromBody] Korisnik korisnik)
+        {
+            //provera da li vec postoji
+            Context.Korisnici.Add(korisnik);
+            await Context.SaveChangesAsync();
+        }
+
+        [Route("IzmeniKorisnika")]
+        [HttpPut]
+        public async Task IzmeniKorisnika([FromBody] Korisnik korisnik)
+        {   if(Context.Korisnici.Find(korisnik)!=null)
+            {
+                Context.Update<Korisnik>(korisnik);
+                await Context.SaveChangesAsync();
+            }
+            
+        }
         [Route("PreuzmiKorisnike")]
         [HttpGet]
         public async Task<List<Korisnik>> PreuzmiKorisnike()
@@ -30,22 +109,9 @@ namespace DontGetSpicy.Controllers
             //return await Context.Korisnici.ToListAsync();
         }
 
-        [Route ("UpisiKorisnika")]
-        [HttpPost]
-        public async Task UpisiKorisnika([FromBody] Korisnik korisnik)
-        {
-            Context.Korisnici.Add(korisnik);
-            await Context.SaveChangesAsync();
-        }
+        
 
-        [Route("IzmeniKorisnika")]
-        [HttpPut]
-        public async Task IzmeniKorisnika([FromBody] Korisnik korisnik)
-        {
-            Context.Update<Korisnik>(korisnik);
-            await Context.SaveChangesAsync();
-            //NAPOMENA: Da bi se izmenio konkretan vrt, moramo da swagger-u ukucamo id zeljenog vrt-a
-        }
+       
 
         [Route("IzbrisiKorisnika/{id}")]
         [HttpDelete]

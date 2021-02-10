@@ -1,23 +1,32 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DontGetSpicy.Models
 {
     public enum Boja{
-        crvena=0,
-        zelena=1,
-        zuta=2,
-        plava=3
+        crveni=0,
+        zeleni=1,
+        zuti=2,
+        plavi=3
     }
-   [NotMapped]
+   
     public class Figura
     {
+        [Key]
+        public int ID { get; set; }
         public int index { get; set; }
         public Boja boja{ get; set; }
+        public Igra igra { get; set; }
         
-        public Figura(int index, Boja boja)
+        public Figura()
+        {
+            
+        }
+        public Figura(int index, Boja boja,Igra igra)
         {
             this.index=index;
             this.boja=boja;
+            this.igra=igra;
         }
     }
 }

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Web_API.Migrations
 {
     [DbContext(typeof(DontGetSpicyContext))]
-    [Migration("20210205204331_v1")]
+    [Migration("20210206190040_v1")]
     partial class v1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,6 +82,10 @@ namespace Web_API.Migrations
                     b.Property<string>("slika")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Slika");
+
+                    b.Property<string>("username")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("username");
 
                     b.HasKey("ID");
 

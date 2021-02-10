@@ -4,43 +4,22 @@ using DontGetSpicy.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Web_API.Migrations
 {
     [DbContext(typeof(DontGetSpicyContext))]
-    partial class DontGetSpicyContextModelSnapshot : ModelSnapshot
+    [Migration("20210207185037_v6")]
+    partial class v6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.2");
-
-            modelBuilder.Entity("DontGetSpicy.Models.Figura", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int>("boja")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("igraID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("index")
-                        .HasColumnType("int");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("igraID");
-
-                    b.ToTable("Figure");
-                });
 
             modelBuilder.Entity("DontGetSpicy.Models.Igra", b =>
                 {
@@ -53,9 +32,6 @@ namespace Web_API.Migrations
                     b.Property<string>("accessCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("aleaIactaEst")
-                        .HasColumnType("bit");
-
                     b.Property<int>("crveniIgracId")
                         .HasColumnType("int");
 
@@ -65,14 +41,15 @@ namespace Web_API.Migrations
                     b.Property<int?>("kreatorIgreID")
                         .HasColumnType("int");
 
-                    b.Property<int>("naPotezu")
-                        .HasColumnType("int");
-
                     b.Property<int>("plaviIgracId")
                         .HasColumnType("int");
 
                     b.Property<string>("plaviUsername")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("stanjeIgre")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("StanjeIgre");
 
                     b.Property<int>("status")
                         .HasColumnType("int")
@@ -130,46 +107,6 @@ namespace Web_API.Migrations
                     b.ToTable("Korisnik");
                 });
 
-            modelBuilder.Entity("DontGetSpicy.Models.Potez", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<int?>("igraID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("izabranaFiguraID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("potezOdigrao")
-                        .HasColumnType("int");
-
-                    b.Property<int>("vrKocke")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("vremeOdigravanja")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("igraID");
-
-                    b.HasIndex("izabranaFiguraID");
-
-                    b.ToTable("Potezi");
-                });
-
-            modelBuilder.Entity("DontGetSpicy.Models.Figura", b =>
-                {
-                    b.HasOne("DontGetSpicy.Models.Igra", "igra")
-                        .WithMany("figure")
-                        .HasForeignKey("igraID");
-
-                    b.Navigation("igra");
-                });
-
             modelBuilder.Entity("DontGetSpicy.Models.Igra", b =>
                 {
                     b.HasOne("DontGetSpicy.Models.Korisnik", "kreatorIgre")
@@ -177,28 +114,6 @@ namespace Web_API.Migrations
                         .HasForeignKey("kreatorIgreID");
 
                     b.Navigation("kreatorIgre");
-                });
-
-            modelBuilder.Entity("DontGetSpicy.Models.Potez", b =>
-                {
-                    b.HasOne("DontGetSpicy.Models.Igra", "igra")
-                        .WithMany("potezi")
-                        .HasForeignKey("igraID");
-
-                    b.HasOne("DontGetSpicy.Models.Figura", "izabranaFigura")
-                        .WithMany()
-                        .HasForeignKey("izabranaFiguraID");
-
-                    b.Navigation("igra");
-
-                    b.Navigation("izabranaFigura");
-                });
-
-            modelBuilder.Entity("DontGetSpicy.Models.Igra", b =>
-                {
-                    b.Navigation("figure");
-
-                    b.Navigation("potezi");
                 });
 
             modelBuilder.Entity("DontGetSpicy.Models.Korisnik", b =>

@@ -1,5 +1,5 @@
 <template>
-  <div id="game">
+  <div >
   <div class="game d-flex flex-row justify-content-" v-bind:class="{'opacity':!started}">
     <div class="map">
         <div v-bind:key="glPolje.index" v-for="glPolje in igra.glavnaPolja">
@@ -60,7 +60,8 @@ export default {
   },
   props:["accessCode","gameToken", "mojaBoja","username","guid","igraci"],
   mounted()
-  {     this.pristiglePoruke.push("Access code is: "+this.accessCode);
+  {     
+    if(this.accessCode!=undefined)this.pristiglePoruke.push("Access code is: "+this.accessCode);
     connection2.start().then(()=>
         {
           connection2.invoke("StartChat",this.guid);
@@ -248,8 +249,5 @@ export default {
 .naPotezu
 {
   border: 5px solid red;
-}
-#game {
-  background-color: white;
 }
 </style>

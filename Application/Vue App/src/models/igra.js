@@ -130,10 +130,12 @@ export default class Igra{
 
 
     odigrajPotez(potez1, potez2)
-    {
-           this.pomeriFiguru(potez1.staraPozicija,potez1.novaPozicija);
-           if(potez2!=null)
+    {       console.log(potez1);
+            console.log(potez2);
+            if(potez2!=null)
            this.pomeriFiguru(potez2.staraPozicija,potez2.novaPozicija);
+           this.pomeriFiguru(potez1.staraPozicija,potez1.novaPozicija);
+           
 
     }
     pomeriFiguru(staraPozicija,novaPozicija)

@@ -10,9 +10,11 @@ using DontGetSpicy;
 using DontGetSpicy.DataProvider;
 using DontGetSpicy.JWT;
 using DontGetSpicy.Models;
+using DontGetSpicy.SignalR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -28,12 +30,13 @@ namespace DontGetSpicy.Controllers
     {   
         private DontGetSpicyContext db { get;set; }
         private static IConfiguration _config;
+        private readonly IHubContext <GameHub> _gameHub;
 
-
-        public GameController(DontGetSpicyContext context,IConfiguration configuration)
+        public GameController(DontGetSpicyContext context,IConfiguration configuration,IHubContext<GameHub> ctx)
         {
             db = context;
             _config=configuration;
+            _gameHub=ctx;
            
         }
         [Authorize]
@@ -71,7 +74,12 @@ namespace DontGetSpicy.Controllers
             if(joinGame.slobodnaBoja(boja))
             {
                joinGame.dodajIgraca(boja,korisnik);
+               if(joinGame.sviPrisutni())
+               {
+                  joinGame.status=statusIgre.uToku;
+               }
                await GameProvider.AzurirajIgru(db,joinGame);
+               
                return Ok(new {token=JWTGenerator.GenerateGameToken(korisnik,joinGame,boja),username=korisnik.username,guid=joinGame.groupNameGUID,igraci=joinGame.vratiIgrace()});
             }
             else return Forbid();
@@ -92,18 +100,19 @@ namespace DontGetSpicy.Controllers
             Potez noviPotez=new Potez(game,vrKocke,bojaIgraca);
             await GameProvider.dodajPotez(db,noviPotez);
             game.aleaIactaEst=!game.aleaIactaEst;
+            bool next=false;
             if(!game.imaLiSeStaOdigrati(bojaIgraca,vrKocke))
             {
                 if(vrKocke!=6)
-                {
+                {   next=true;
                 game.naPotezu=(Igra.redosledPoteza.Find(bojaIgraca).Next??Igra.redosledPoteza.First).Value;
                 }
                 game.aleaIactaEst=!game.aleaIactaEst;
                 
             }
             await GameProvider.AzurirajIgru(db,game);
-            
-            return Ok(new {kocka=vrKocke});
+            await _gameHub.Clients.Group(game.groupNameGUID).SendAsync("kockaBacena",vrKocke,next);  
+            return Ok();
             
         }
         [Authorize]
@@ -123,7 +132,8 @@ namespace DontGetSpicy.Controllers
             Figura izabranaFigura=game.figure.Where(Figura=>Figura.index==figuraIndex&&Figura.boja==bojaIgraca).FirstOrDefault();
             poslednjiPotez.izabranaFigura=izabranaFigura;
             if(izabranaFigura==null)return NotFound();
-            if(!game.odigrajPotez(izabranaFigura,poslednjiPotez.vrKocke,bojaIgraca)) return NotFound();
+            List<Tuple<int,int>> potezi=game.odigrajPotez(izabranaFigura,poslednjiPotez.vrKocke,bojaIgraca);
+            if(potezi==null) return NotFound();
             game.aleaIactaEst=!game.aleaIactaEst;
             if(poslednjiPotez.vrKocke!=6)
             game.naPotezu=(Igra.redosledPoteza.Find(bojaIgraca).Next??Igra.redosledPoteza.First).Value; 
@@ -132,6 +142,8 @@ namespace DontGetSpicy.Controllers
             await GameProvider.AzurirajIgru(db,game);
 
             await GameProvider.AzurirajPotez(db,poslednjiPotez);
+             await _gameHub.Clients.Group(game.groupNameGUID).SendAsync("figuraPomerena",potezi,poslednjiPotez.vrKocke!=6); 
+             if(game.kraj()!=null)  await _gameHub.Clients.Group(game.groupNameGUID).SendAsync("krajIgre",game.kraj()); 
             
             return Ok();
             

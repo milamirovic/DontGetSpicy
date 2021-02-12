@@ -11,6 +11,7 @@ namespace DontGetSpicy.SignalR
             await Groups.AddToGroupAsync(Context.ConnectionId, gameGUID);
            await Clients.GroupExcept(gameGUID,Context.ConnectionId).SendAsync("userJoined",username,boja);
         }
+        
 
        
    }

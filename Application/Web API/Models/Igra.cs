@@ -164,32 +164,36 @@ namespace DontGetSpicy.Models
             {      
                 
                    
-                MyRange bojaHome=(MyRange)typeof(Igra).GetField(figura.boja.ToString()+"Home").GetValue(null);
+                MyRange bojaHome=(MyRange)typeof(Igra).GetField(b.ToString()+"Home").GetValue(null);
                 if(bojaHome.isWithin(novaPozicija) &&b!=figura.boja)
                 {   
                     novaPozicija+=4;
                     novaPozicija=(novaPozicija<57)?novaPozicija:(novaPozicija)%56;
                 }
             }
-            if(figure.Where(figura=>figura.index==novaPozicija&&figura.boja==figura.boja).FirstOrDefault()!=null) return 0;
+            if(figure.Where(fig=>fig.index==novaPozicija&&fig.boja==figura.boja).FirstOrDefault()!=null) return 0;
             if(novaPozicija>=(int)figura.boja*mbr+1&&figura.index<=((MyRange)typeof(Igra).GetField(figura.boja.ToString()+"Home").GetValue(null)).End&&figura.index>=((MyRange)typeof(Igra).GetField(figura.boja.ToString()+"Home").GetValue(null)).End-8)
                 return 0;
             return (novaPozicija<57)?novaPozicija:(novaPozicija)%56;
            }
            return 0;
        }
-       public bool odigrajPotez(Figura figura, int kocka, Boja bojaKorisnika)
+       public List<Tuple<int,int>> odigrajPotez(Figura figura, int kocka, Boja bojaKorisnika)
        {
-           if(figura.boja!=bojaKorisnika) return false;
+           List<Tuple<int,int>> potezi=new List<Tuple<int, int>>();
+           if(figura.boja!=bojaKorisnika) return null;
             int novaPozicija=this.racunajPomeranje(figura,kocka);
-            if(novaPozicija==0) return false;
+            if(novaPozicija==0) return null;
             Figura mozdaPomeri=figure.Where(fig=>fig.index==novaPozicija&&fig.boja!=figura.boja).FirstOrDefault();
             Figura tekuca=figure.Where(fig=>fig.index==figura.index&&fig.boja==figura.boja).FirstOrDefault();
-            if(tekuca==null) return false;
+            if(tekuca==null) return null;
+            potezi.Add(new Tuple<int, int>(tekuca.index,novaPozicija));
             tekuca.index=novaPozicija;
-            if(mozdaPomeri==null) return true;
+            
+            if(mozdaPomeri==null) return potezi;
+            potezi.Add(new Tuple<int, int>(mozdaPomeri.index,vratiUHome(mozdaPomeri)));
             mozdaPomeri.index=vratiUHome(mozdaPomeri);
-            return true;
+            return potezi;
 
 
 
@@ -253,6 +257,26 @@ namespace DontGetSpicy.Models
                  lista.Add(username);
             }
             return lista;
+        }
+        public bool sviPrisutni()
+        {
+             foreach(Boja b in Enum.GetValues(typeof (Boja)))
+            { 
+                if(slobodnaBoja(b))
+                return false;
+            }
+            return true;
+
+        }
+        public Boja? kraj()
+        {   
+           foreach(Boja b in Enum.GetValues(typeof (Boja)))
+            {  
+                MyRange bojaHome=(MyRange)typeof(Igra).GetField(b.ToString()+"Home").GetValue(null);
+                if(this.figure.Where(fig =>bojaHome.isWithin(fig.index)).ToList().Count()==4)
+                return b;
+            }
+            return null;
         }
     }
 }

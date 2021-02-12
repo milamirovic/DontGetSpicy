@@ -2,7 +2,6 @@
   <div id="app">
     <div id="nav" class="bg-info" v-if="this.$route.path !== '/game'">
       <router-link to="/" class="mx-2">Home</router-link> 
-      <router-link to="/game" class="mx-2">Game</router-link>  
       <router-link to="/login" class="mx-2">Login</router-link>  
       <router-link to="/signup" class="mx-2">Signup</router-link>
     </div>

@@ -61,7 +61,7 @@ namespace Web_API
 
 
             });
-            services.AddSignalR();
+            services.AddSignalR();//services.AddScoped<HubProvider>();
             //services.AddMvc();
             services.AddDbContext<DontGetSpicyContext>(options => 
             {

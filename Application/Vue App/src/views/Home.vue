@@ -2,8 +2,6 @@
   <div id="home" class="m-4 d-flex flex-column" thumbnail>
     <img src="../assets/2.png" class="mx-auto" style="width:40%;height:40%;">
     <Igre v-bind:igre="igre" />
-    <button class="btn btn-info m-2">Kreiraj igru</button>
-    <button class="btn btn-info m-2">Vidi statistiku</button>
   </div>
 </template>
 

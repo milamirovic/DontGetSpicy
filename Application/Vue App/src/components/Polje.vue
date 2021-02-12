@@ -1,11 +1,12 @@
 <template>
     <div v-bind:id=this.polje.index style="margin-left:10px" v-bind:class="{'hide':polje.figura==null}">
-     <img :src="imgSrc()" width="32px" height="50px" >
+     <img :src="imgSrc()" width="32px" height="50px" @click="print" >
     </div>
 </template>
 
 <script>
 export default {
+        name:"Polje",
       props:["polje"],
       mounted(){
                
@@ -20,6 +21,11 @@ export default {
           imgSrc()
           {   if(this.polje.figura!=null)
               return require(`../assets/${this.polje.figura.boja}.png`);
+          },
+          print()
+          {
+              this.$emit("figuraIzabrana",this.polje);
+
           }
 
 

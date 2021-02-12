@@ -9,7 +9,6 @@ namespace DontGetSpicy.Models
         zuti=2,
         plavi=3
     }
-   
     public class Figura
     {
         [Key]

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DontGetSpicy.JWT;
 using DontGetSpicy.Models;
+using DontGetSpicy.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,7 +36,7 @@ namespace Web_API
         {
             services.AddCors(opts=>
             {
-                opts.AddPolicy("Cors", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials().Build());
+                opts.AddPolicy("Cors", builder => builder.WithOrigins("http://localhost:8080").AllowAnyMethod().AllowAnyHeader().AllowCredentials().Build());
             });
 
             services.AddControllers();
@@ -56,9 +57,11 @@ namespace Web_API
                        IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
 
                    } ;
+                   
 
 
             });
+            services.AddSignalR();
             //services.AddMvc();
             services.AddDbContext<DontGetSpicyContext>(options => 
             {
@@ -88,12 +91,15 @@ namespace Web_API
 
              app.UseRouting();JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             app.UseAuthentication();
+            app.UseCors("Cors");
             app.UseAuthorization();
             //app.userouting()?
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/ChatHub");
+                endpoints.MapHub<GameHub>("/GameHub");
             });
             JWTGenerator.Instantiate(this.Configuration);
         }

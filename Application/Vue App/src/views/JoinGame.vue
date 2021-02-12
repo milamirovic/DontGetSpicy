@@ -1,0 +1,82 @@
+<template>
+    <div style="width:100%" class="d-flex my-4"><br><br>
+        <div class="mx-5">
+        <div class="border border-info p-2 w-50" >
+            <h2>Create new game</h2>
+            <button class="btn btn-info" v-on:click="newGame">New game</button>
+        </div><br><br>
+        <div class="border border-info p-2 w-75" >
+        <h2 style="color:black">Join Game</h2><br>
+        <h2 style="color:black">Game code:<input type="text" v-model="accessCode" ></h2>
+        <button class="btn btn-info" v-on:click="joinGame">Join game</button><br><br>
+        </div>
+        </div>
+         <BojaSelector v-on:colorChanged="promeniBoju" />
+
+    </div>
+</template>
+
+<script>
+import router from '../router/index.js'
+import BojaSelector from "../components/BojaSelector"
+import axios from "axios"
+export default {
+    name:"JoinGame",
+    components:{
+        BojaSelector
+    },
+    data() {
+    return {
+      accessCode: '',
+      selektovanaBoja:'crveni'
+      
+    }
+  },
+    methods:{
+        promeniBoju(ev)
+        {
+               this.selektovanaBoja=ev;
+               console.log(this.selektovanaBoja);
+        },
+        newGame()
+        {   let boja=this.selektovanaBoja;
+            let loginConfig = { headers: {
+                   Authorization: "Bearer " + this.loginToken
+                     }
+                        }
+                     axios.get(`https://localhost:5001/Game/NewGame?boja=${boja}`,loginConfig)
+                    .then((data) =>
+                    { 
+                        router.push({ name: 'Game', params:{accessCode:data.data.accessCode, gameToken:data.data.token, Boja:this.selektovanaBoja, username:data.data.username, guid:data.data.guid,igraci:null} })
+                    }).catch(err =>console.log(err));
+        },
+        joinGame()
+        {   
+            let boja=this.selektovanaBoja;
+            let loginConfig = { headers: {
+                   Authorization: "Bearer " + this.loginToken
+                     }}
+            axios.get(`https://localhost:5001/Game/JoinGame?boja=${boja}&accessCode=${this.accessCode}`,loginConfig)
+            .then((data) =>
+        { 
+           
+        router.push({ name: 'Game', params:{gameToken:data.data.token,Boja:this.selektovanaBoja,username:data.data.username, guid:data.data.guid, igraci:data.data.igraci} })
+         }).catch(err =>console.log(err));
+        }
+
+
+    },
+    props:["loginToken"],
+    mounted()
+    {
+       
+    }
+}
+</script>
+<style scoped>
+h2
+{
+    color: black;
+}
+
+</style>

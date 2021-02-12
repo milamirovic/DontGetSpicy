@@ -69,6 +69,7 @@ namespace DontGetSpicy.Models
         public bool aleaIactaEst { get; set; }
         public List<Potez> potezi { get; set; }
         public List<Figura> figure { get; set; }
+        public string groupNameGUID { get; set; }
 
        #region staticMembers
         
@@ -213,13 +214,14 @@ namespace DontGetSpicy.Models
         }
         public Igra(Korisnik igruKreirao)
         {
+            this.groupNameGUID=Guid.NewGuid().ToString();
             this.aleaIactaEst=false;
             this.kreatorIgre=igruKreirao;
             this.status=statusIgre.cekanjeIgraca;
             figure=new List<Figura>(16);
             for(int i=1;i<=16;i=i+4)
             {
-
+                
                 figure.Add(new Figura(-(i),(Boja)(i/4),this));
                 figure.Add(new Figura(-(i+1),(Boja)(i/4),this));
                 figure.Add(new Figura(-(i+2),(Boja)(i/4),this));
@@ -240,6 +242,17 @@ namespace DontGetSpicy.Models
         {
             this.GetType().GetProperty(boja.ToString()+"IgracId").SetValue(this,dodaj.ID);
             this.GetType().GetProperty(boja.ToString()+"Username").SetValue(this,dodaj.username);
+        }
+        public List<string> vratiIgrace()
+        {     
+             List<string> lista=new List<string>();
+            foreach(Boja b in Enum.GetValues(typeof (Boja)))
+            { 
+                string username=(string)this.GetType().GetProperty(b.ToString()+"Username").GetValue(this);
+                
+                 lista.Add(username);
+            }
+            return lista;
         }
     }
 }

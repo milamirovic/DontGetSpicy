@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using DontGetSpicy.DataProvider;
 using DontGetSpicy.JWT;
+using System.Text.Json;
 
 namespace DontGetSpicy.Controllers
 {
@@ -28,9 +29,10 @@ namespace DontGetSpicy.Controllers
         [AllowAnonymous]
         [Route("Login")]
         [HttpPost]
-        public async Task<IActionResult> Login(string email,string password)
+        public async Task<IActionResult> Login(object korisnik)
         {
-            Korisnik loginKorisnik=await KorisnikProvider.GetKorisnik(Context,email,password);
+            Korisnik podaciKorisnika=JsonConvert.DeserializeObject<Korisnik>(((JsonElement)korisnik).ToString());
+            Korisnik loginKorisnik=await KorisnikProvider.GetKorisnik(Context,podaciKorisnika.email,podaciKorisnika.password);
             if(loginKorisnik==null)
             return NotFound();
            

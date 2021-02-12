@@ -1,16 +1,52 @@
 <template>
   <div id="app">
-    <div id="nav" class="bg-info">
+    <div id="nav" class="bg-info" v-if="this.$route.path !== '/game'">
       <router-link to="/" class="mx-2">Home</router-link> 
-      <router-link to="/about" class="mx-2">About</router-link>  
+      <router-link to="/game" class="mx-2">Game</router-link>  
       <router-link to="/login" class="mx-2">Login</router-link>  
       <router-link to="/signup" class="mx-2">Signup</router-link>
     </div>
-    <router-view/>
+    <router-view v-on:LoginSuccess="test"/>
 -  </div>
 </template>
 
+
+
+
+<script>
+import router from './router/index.js'
+export default {
+  name:"App",
+  data() {
+    return {
+      loginToken: ''
+      
+    }
+  },
+  methods:{
+    test(data)
+    {
+      this.loginToken=data.data.tokenStr;
+      router.push({ name: 'JoinGame', params: { loginToken: this.loginToken } })
+      
+      
+    }
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+
 <style>
+
+
 
 @import url('https://fonts.googleapis.com/css?family=Varela+Round');
 

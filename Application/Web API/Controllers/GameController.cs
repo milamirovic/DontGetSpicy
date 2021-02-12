@@ -52,7 +52,7 @@ namespace DontGetSpicy.Controllers
             {
                 OkObjectResult result=(OkObjectResult) res;
                 dynamic val=result.Value;
-                return Ok(new {token=val.token,accessCode=novaIgra.accessCode});
+                return Ok(new {token=val.token,accessCode=novaIgra.accessCode, username=korisnik.username, guid=novaIgra.groupNameGUID});
             }
             return BadRequest();
         }
@@ -72,7 +72,7 @@ namespace DontGetSpicy.Controllers
             {
                joinGame.dodajIgraca(boja,korisnik);
                await GameProvider.AzurirajIgru(db,joinGame);
-               return Ok(new {token=JWTGenerator.GenerateGameToken(korisnik,joinGame,boja)});
+               return Ok(new {token=JWTGenerator.GenerateGameToken(korisnik,joinGame,boja),username=korisnik.username,guid=joinGame.groupNameGUID,igraci=joinGame.vratiIgrace()});
             }
             else return Forbid();
         }
@@ -81,6 +81,7 @@ namespace DontGetSpicy.Controllers
         [HttpGet]
         public async Task<IActionResult> BaciKocku()
         {
+            
             string igraId=User.FindFirstValue("sub");
             Boja bojaIgraca= Enum.Parse<Boja>(User.FindFirstValue("Boja"));
             Igra game=await GameProvider.NadjiIgruFigure(db,Int32.Parse(igraId));

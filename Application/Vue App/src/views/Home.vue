@@ -4,11 +4,11 @@
     <Igre v-bind:igre="igre" />
     <button class="btn btn-info m-2">Kreiraj igru</button>
     <button class="btn btn-info m-2">Vidi statistiku</button>
-
   </div>
 </template>
 
 <script>
+
 import Igre from '../components/Igre';
 export default {
   name: 'home',

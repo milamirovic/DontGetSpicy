@@ -1,12 +1,12 @@
 <template>
   <div id="app">
     <div id="nav" class="bg-info" v-if="this.$route.path !== '/game'">
-      <router-link to="/" class="mx-2">Home</router-link> 
+      <router-link to="/" class="mx-2">Don'tGetSpicy</router-link> 
       <router-link to="/login" class="mx-2">Login</router-link>  
       <router-link to="/signup" class="mx-2">Signup</router-link>
     </div>
     <router-view v-on:LoginSuccess="test"/>
--  </div>
+  </div>
 </template>
 
 
@@ -34,18 +34,7 @@ export default {
 }
 </script>
 
-
-
-
-
-
-
-
-
-
 <style>
-
-
 
 @import url('https://fonts.googleapis.com/css?family=Varela+Round');
 
@@ -53,7 +42,8 @@ export default {
       font-family: 'Varela Round', Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
-      color: #f5f9fd;
+      color: #1d3751;
+      
     }
 
 #nav {
@@ -62,7 +52,11 @@ export default {
 
 #nav a {
   font-weight: bold;
-  color: #2c3e50;
+  color: #a5d0fc;
+}
+
+#nav a:hover {
+  color: #dceeff;
 }
 
 #nav a.router-link-exact-active {

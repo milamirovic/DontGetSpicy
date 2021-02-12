@@ -9,12 +9,15 @@
   },
   "dependencies": {
     "@microsoft/signalr": "^5.0.3",
+    "animate.css": "^4.1.1",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
+    "buefy": "^0.9.4",
     "core-js": "^3.6.5",
     "google-fonts-plugin": "^5.0.2",
     "jquery": "^3.5.1",
+    "nuxt-buefy": "^0.4.4",
     "popper.js": "^1.16.1",
     "vue": "^2.6.12",
     "vue-router": "^3.2.0"

@@ -1,5 +1,5 @@
 <template>
-  <div >
+  <div id="game">
   <div class="game d-flex flex-row justify-content-" v-bind:class="{'opacity':!started}">
     <div class="map">
         <div v-bind:key="glPolje.index" v-for="glPolje in igra.glavnaPolja">
@@ -248,5 +248,8 @@ export default {
 .naPotezu
 {
   border: 5px solid red;
+}
+#game {
+  background-color: white;
 }
 </style>

@@ -1,6 +1,5 @@
 <template>
   <div id="home" class="m-4 d-flex flex-column" thumbnail>
-    <img src="../assets/2.png" class="mx-auto" style="width:40%;height:40%;">
     <Igre v-bind:igre="igre" />
   </div>
 </template>
@@ -41,7 +40,8 @@ export default {
 
 @import url('https://fonts.googleapis.com/css?family=Varela+Round');
 
-    #app {
+    #home {
+            background-color: #17A2B8;
       font-family: 'Varela Round', Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;

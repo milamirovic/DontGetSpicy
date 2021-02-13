@@ -10,6 +10,8 @@ using System.Text.Json.Serialization;
 
 namespace DontGetSpicy.Models
 {
+    
+    
     public struct MyRange{
         public int Start;
         public int End;
@@ -164,12 +166,16 @@ namespace DontGetSpicy.Models
             {      
                 
                    
+                 if(b==figura.boja) continue;
+                   
                 MyRange bojaHome=(MyRange)typeof(Igra).GetField(b.ToString()+"Home").GetValue(null);
-                if(bojaHome.isWithin(novaPozicija) &&b!=figura.boja)
+
+                if(bojaHome.isWithin(novaPozicija)||(figura.index==bojaHome.Start-2&&kocka==6)||(figura.index==bojaHome.Start-1&&kocka==6)||(figura.index==bojaHome.Start-1&&kocka==5))
                 {   
                     novaPozicija+=4;
                     novaPozicija=(novaPozicija<57)?novaPozicija:(novaPozicija)%56;
                 }
+                 
             }
             if(figure.Where(fig=>fig.index==novaPozicija&&fig.boja==figura.boja).FirstOrDefault()!=null) return 0;
             if(novaPozicija>=(int)figura.boja*mbr+1&&figura.index<=((MyRange)typeof(Igra).GetField(figura.boja.ToString()+"Home").GetValue(null)).End&&figura.index>=((MyRange)typeof(Igra).GetField(figura.boja.ToString()+"Home").GetValue(null)).End-8)
@@ -278,5 +284,31 @@ namespace DontGetSpicy.Models
             }
             return null;
         }
+       /* public static Tuple<int,string,int,int> proveraKretanja(Figura figura, int kocka)
+       {    
+          
+           if(figura.index>0)
+           {
+               int novaPozicija=(figura.index+kocka<57)?figura.index+kocka:(figura.index+kocka)%56;
+            
+            foreach(Boja b in Enum.GetValues(typeof (Boja)))
+            {      
+                if(b==figura.boja) continue;
+                   
+                MyRange bojaHome=(MyRange)typeof(Igra).GetField(b.ToString()+"Home").GetValue(null);
+
+                if(bojaHome.isWithin(novaPozicija)||(figura.index==bojaHome.Start-2&&kocka==6)||(figura.index==bojaHome.Start-1&&kocka==6)||(figura.index==bojaHome.Start-1&&kocka==5))
+                {   
+                    novaPozicija+=4;
+                    novaPozicija=(novaPozicija<57)?novaPozicija:(novaPozicija)%56;
+                }
+                 
+            }
+            if(novaPozicija>=(int)figura.boja*mbr+1&&figura.index<=((MyRange)typeof(Igra).GetField(figura.boja.ToString()+"Home").GetValue(null)).End&&figura.index>=((MyRange)typeof(Igra).GetField(figura.boja.ToString()+"Home").GetValue(null)).End-8)
+                return new Tuple<int,string,int, int>(figura.index,figura.boja.ToString(),kocka,0);
+            return new Tuple<int,string,int, int>(figura.index,figura.boja.ToString(),kocka,novaPozicija);
+           } 
+           return new Tuple<int,string,int, int>(figura.index,figura.boja.ToString(),kocka,0);
+       }*/
     }
 }

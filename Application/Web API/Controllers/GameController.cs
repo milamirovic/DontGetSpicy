@@ -148,7 +148,9 @@ namespace DontGetSpicy.Controllers
             return Ok();
             
         }
-        
+
+
+    
 
 
 
@@ -162,34 +164,31 @@ namespace DontGetSpicy.Controllers
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        [Route("test")]
+       /* [Route("testPomeranja")]
         [HttpGet]
-        public void PreuzmiKorisnik2e()
+        public List<List<List<Tuple<int,string,int,int>>>> testPomeranja()
         {
-         // Korisnik korisnik=Context.Korisnici.FirstOrDefault();
-       //  DontGetSpicy.DataProvider.DataProvider.kreirajIgru(Context,korisnik);
-           // Igra igra =db.Igre.FirstOrDefault();
-           // List<Figura> figuras= JsonConvert.DeserializeObject<List<Figura>>(igra.stanjeIgre);
+            List<List<List<Tuple<int,string,int,int>>>> rez= new List<List<List<Tuple<int,string,int,int>>>>(56);
+            for(int i=1;i<=56;i++)
+            {
+                List<List<Tuple<int,string,int,int>>> lista1=new List<List<Tuple<int,string,int,int>>>(6);
+                for(int j=0;j<6;j++)
+                {
+                    List<Tuple<int,string,int,int>> lista2=new List<Tuple<int,string,int,int>>(4);
+                    foreach(Boja b in Enum.GetValues(typeof(Boja)))
+                    {
+                         lista2.Add(Igra.proveraKretanja(new Figura(i,b,null),j+1));
+                  
+                    }   
 
+                    lista1.Add(lista2);
 
-        }
-      
-        
-       
-        
-   
+                }
+                rez.Add(lista1);
+                
+            }
+            return rez;
+            
+        }*/
     }
 }

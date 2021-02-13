@@ -16,7 +16,7 @@
     <Korisnik class="zeleni" v-bind:class="{'naPotezu':naPotezu=='zeleni'}" v-bind:ime="zeleni"/>
     <Korisnik class="zuti" v-bind:class="{'naPotezu':naPotezu=='zuti'}" v-bind:ime="zuti"/>
     <Korisnik class="plavi" v-bind:class="{'naPotezu':naPotezu=='plavi'}" v-bind:ime="plavi"/>
-    <div  v-on:click="baciKocku" style="position:absolute; top:70%;left:65%;font-size:200px">{{kocka}}</div>
+    <button  v-on:click="baciKocku" style="position:absolute; top:70%;left:65%;font-size:200px; width:300px; height:300px;" class="btn btn-outline-info">{{kocka}}</button>
   </div>
       <div v-if="!started" class="pos">
         Waiting for players to join... <div class="loader"></div>

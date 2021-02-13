@@ -1,13 +1,13 @@
 <template>
 <div class="glavni d-flex align-items-center">
-  <div class="signup w-50 border border-info login d-flex flex-row justify-content-center my-4">
+  <div class="signup border border-info login d-flex flex-row justify-content-center my-4" style="width:400px;">
     <div class="align-self-center rounder-lg d-flex flex-column align-items-center p-4">
       <!-- <img src="https://i.imgur.com/Wt7up6Q.png" class="w-25 h-25"> -->
-      <img src="../assets/signup.png" class="w-25 h-25">
-      <input type="text" placeholder="email" class="input is-rounded my-2"/>
-      <input type="text" placeholder="username" class="input is-rounded my-2"/>
-      <input type="text" placeholder="password" class="input is-rounded my-2"/>
-      <button type="submit" name="Signup" class="mt-3 btn btn-info w-100">Signup</button>
+      <img src="../assets/signupXSmall.png" class="w-50 h-50">
+      <input type="text" placeholder="email" class="input is-rounded my-2 w-75"/>
+      <input type="text" placeholder="username" class="input is-rounded my-2 w-75"/>
+      <input type="text" placeholder="password" class="input is-rounded my-2 w-75"/>
+      <button type="submit" name="Signup" class="mt-3 btn btn-info w-75">Signup</button>
     </div>
   </div>
 </div>

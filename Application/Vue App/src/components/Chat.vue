@@ -1,11 +1,16 @@
 <template>
     <div>
-    <div style="overflow:scroll; max-height:200px">
+    <div style="overflow:scroll; max-height:200px" class="border border-info rounded bg-light">
         <div v-bind:key="poruka" v-for="poruka in poruke" >
                <div v-bind:poruka="poruka">{{poruka}}</div>        
         </div>
      </div>   
-        <div><input v-model="novaPoruka" type="text"><button v-on:click="addMsg">Send</button></div>
+        <div class="d-flex flex-row">
+            <input v-model="novaPoruka" type="text" class="input is-info">
+            <button v-on:click="addMsg" class="btn btn-info">
+                <i class="fa fa-paper-plane" aria-hidden="true"></i>
+            </button>
+        </div>
     </div>
 </template>
 

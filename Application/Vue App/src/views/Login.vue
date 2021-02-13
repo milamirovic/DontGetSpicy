@@ -1,12 +1,12 @@
 <template>
 <div class="glavni d-flex align-items-center">
 
-  <div class="login w-50 border border-info login d-flex flex-row justify-content-center my-4">
+  <div class="login border border-info login d-flex flex-row justify-content-center my-4" style="width:400px;">
     <div class="align-self-center rounder-lg d-flex flex-column align-items-center p-4">
-      <img src="../assets/login.png" class="w-25 h-25"/>
-      <input type="text" v-model="username" placeholder="username" class="input is-rounded my-2" />
-      <input type="password" v-model="password" placeholder="password" class="input is-rounded my-2" />
-      <button type="submit" name="Login" class="mt-3 btn btn-info w-100" v-on:click=Login>Login</button>
+      <img src="../assets/loginXSmall.png" class="w-50 h-50"/>
+      <input type="text" v-model="username" placeholder="username" class="input is-rounded my-2 w-75" />
+      <input type="password" v-model="password" placeholder="password" class="input is-rounded my-2 w-75" />
+      <button type="submit" name="Login" class="mt-3 btn btn-info w-75" v-on:click=Login>Login</button>
     </div>
   </div>
   

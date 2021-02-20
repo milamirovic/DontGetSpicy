@@ -37,9 +37,9 @@ namespace DontGetSpicy.JWT
             {
                 Claim[] claims=new Claim[]{
                 new Claim(JwtRegisteredClaimNames.Email,korisnik.email),
-                new Claim(JwtRegisteredClaimNames.Sub,igra.ID.ToString()),
-                new Claim("Boja", boja.ToString()),
-                new Claim("kreatorIgre?",(igra.kreatorIgre.ID==korisnik.ID).ToString(), ClaimValueTypes.Boolean/*na klijentu se ocitava kao bool*/)
+                new Claim(JwtRegisteredClaimNames.Sub,igra.groupNameGUID),
+                new Claim("Boja", boja.ToString())
+                //new Claim("kreatorIgre?",(igra.kreatorIgre.ID==korisnik.ID).ToString(), ClaimValueTypes.Boolean/*na klijentu se ocitava kao bool*/)
                 };
 
                 return GenerateToken(claims);
@@ -55,7 +55,7 @@ namespace DontGetSpicy.JWT
                 issuer:_config["Jwt:Issuer"],
                 audience:_config["Jwt:Issuer"],
                 claims,
-                expires:DateTime.Now.AddMinutes(123),
+                expires:DateTime.Now.AddMinutes(60),
                 signingCredentials:credentials);
             var encodetoken=new JwtSecurityTokenHandler().WriteToken(token);
             return encodetoken;

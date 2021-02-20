@@ -28,9 +28,9 @@ namespace DontGetSpicy.DataProvider
         }
 
       
-        public static async Task<Igra> NadjiIgruFigure(DontGetSpicyContext db, int idIgre)
+        public static async Task<Igra> NadjiIgruFigure(DontGetSpicyContext db, string id)
         {
-            return await db.Igre.Include(igra=>igra.figure).Where(Igra=>Igra.ID==idIgre).FirstOrDefaultAsync();
+            return await db.Igre.Include(igra=>igra.figure).Where(Igra=>Igra.groupNameGUID==id).FirstOrDefaultAsync();
         }
         public static async Task dodajPotez(DontGetSpicyContext db,Potez noviPotez)
         {
@@ -50,6 +50,15 @@ namespace DontGetSpicy.DataProvider
         {
             db.Potezi.Update(potez);
            await db.SaveChangesAsync();
+        }
+        public static async Task<List<string>> slikeIgraca(DontGetSpicyContext db, Igra igra)
+        {
+               List<Korisnik> rez=new List<Korisnik>();
+               rez.Add(await KorisnikProvider.GetKorisnik(db,igra.crveniIgracId));
+               rez.Add(await KorisnikProvider.GetKorisnik(db,igra.zeleniIgracId));
+               rez.Add(await KorisnikProvider.GetKorisnik(db,igra.zutiIgracId));
+               rez.Add(await KorisnikProvider.GetKorisnik(db,igra.plaviIgracId));
+               return rez.Select(kor =>(kor!=null)?kor.slika:null).ToList();
         }
 
 

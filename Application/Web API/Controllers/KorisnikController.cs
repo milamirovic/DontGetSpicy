@@ -11,6 +11,10 @@ using System.Security.Claims;
 using DontGetSpicy.DataProvider;
 using DontGetSpicy.JWT;
 using System.Text.Json;
+using System.IO;
+using System.Net.Http.Headers;
+using System;
+using Microsoft.AspNetCore.Http;
 
 namespace DontGetSpicy.Controllers
 {
@@ -19,43 +23,111 @@ namespace DontGetSpicy.Controllers
     public class KorisnikController : ControllerBase
     {
       
-        public DontGetSpicyContext Context { get;set; }
+        public DontGetSpicyContext db { get;set; }
 
         public KorisnikController(DontGetSpicyContext context)
         {
-            Context = context;
+            db = context;
         }
        
         [AllowAnonymous]
         [Route("Login")]
         [HttpPost]
-        public async Task<IActionResult> Login(object korisnik)
+        public async Task<IActionResult> Login(JsonElement korisnik)
         {
-            Korisnik podaciKorisnika=JsonConvert.DeserializeObject<Korisnik>(((JsonElement)korisnik).ToString());
-            Korisnik loginKorisnik=await KorisnikProvider.GetKorisnik(Context,podaciKorisnika.email,podaciKorisnika.password);
+            Korisnik podaciKorisnika=JsonConvert.DeserializeObject<Korisnik>((korisnik).ToString());
+            Korisnik loginKorisnik=await KorisnikProvider.GetKorisnik(db,podaciKorisnika.email,podaciKorisnika.password);
             if(loginKorisnik==null)
             return NotFound();
            
             var tokenStr=JWTGenerator.GenerateLoginToken(loginKorisnik);
           
-            return Ok(new {tokenStr=tokenStr,userData=loginKorisnik});
+            return Ok(new {tokenStr=tokenStr});
         }
         [Authorize]
         [Route("PodaciKorisnika")]
         [HttpGet]
         public async Task<IActionResult> PodaciKorisnika()
-        {   
-            //var identity=HttpContext.User.Identity as ClaimsIdentity;
-            //IList<Claim> claims=identity.Claims.ToList();
-           // var username=claims[0].Value;
-            
+        {          
             string email=User.FindFirstValue("email");
             if(email==null) return BadRequest();
-            return Ok(new {korisnik=await KorisnikProvider.GetKorisnik(Context,email)});
-          
-
+            Korisnik korisnik=await KorisnikProvider.GetKorisnik(db,email);
+            return Ok(new {korisnik=korisnik});
         }
+       
         [Authorize]
+        [Route("AzurirajSliku")]
+        [HttpPut]
+        public async Task<IActionResult> AzurirajSliku(IFormFile slika)
+        {  
+            string email=User.FindFirstValue("email");
+            if(email==null) return BadRequest();
+            Korisnik korisnik=await KorisnikProvider.GetKorisnik(db, email);
+
+             try
+                {
+                    var file = Request.Form.Files[0];
+                    var folderName = Path.Combine("Resources", "Images");
+                    var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                    if (file.Length > 0)
+                    {
+                        string fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                            fileName=fileName.Substring(fileName.LastIndexOf('.'));
+                            fileName=Guid.NewGuid()+fileName;
+                        string fullPath = Path.Combine(pathToSave, fileName);
+                        using (var stream = new FileStream(fullPath, FileMode.Create))
+                        {
+                            file.CopyTo(stream);
+                        }
+                        if(korisnik.slika.CompareTo(new Korisnik().slika)!=0)
+                        {
+                            System.IO.FileInfo oldPic = new FileInfo( Path.Combine(pathToSave,korisnik.slika));
+                             oldPic.Delete(); 
+
+
+                        }
+
+
+                        korisnik.slika=fileName;
+                        await KorisnikProvider.SnimiKorisnika(db,korisnik);
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Internal server error: {ex}");
+                }
+            
+            
+        }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+         [Authorize]
         [Route("IgreKorisnika")]
         [HttpGet]
         public async Task<IActionResult> IgreKorisnika()
@@ -63,28 +135,11 @@ namespace DontGetSpicy.Controllers
             //samo pauzirane igre
             string email=User.FindFirstValue("email");
             if(email==null) return BadRequest();
-            return Ok(new {igre=await KorisnikProvider.GetKorisnikIgre(Context,email)});
+            return Ok(new {igre=await KorisnikProvider.GetKorisnikPauziraneIgre(db,email)});
     
         }
-    
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-         [Route ("UpisiKorisnika")]
+        /* [Route ("UpisiKorisnika")]
         [HttpPost]
         public async Task UpisiKorisnika([FromBody] Korisnik korisnik)
         {

@@ -47,7 +47,7 @@ export default {
                      axios.get(`https://localhost:5001/Game/NewGame?boja=${boja}`,loginConfig)
                     .then((data) =>
                     { 
-                        router.push({ name: 'Game', params:{accessCode:data.data.accessCode, gameToken:data.data.token, mojaBoja:this.selektovanaBoja, username:data.data.username, guid:data.data.guid,igraci:null} })
+                        router.push({ name: 'Game', params:{accessCode:data.data.accessCode, gameToken:data.data.token, mojaBoja:this.selektovanaBoja, username:data.data.username, slika:data.data.slika,igraciImena:null,igraciSlike:null} })
                     }).catch(err =>console.log(err));
         },
         joinGame()
@@ -60,7 +60,7 @@ export default {
             .then((data) =>
         { 
            
-        router.push({ name: 'Game', params:{gameToken:data.data.token,mojaBoja:this.selektovanaBoja,username:data.data.username, guid:data.data.guid, igraci:data.data.igraci} })
+        router.push({ name: 'Game', params:{gameToken:data.data.token,mojaBoja:this.selektovanaBoja,username:data.data.username,slika:data.data.slika,igraciImena:data.data.igraciImena,igraciSlike:data.data.igraciSlike} })
          }).catch(err =>console.log(err));
         }
 

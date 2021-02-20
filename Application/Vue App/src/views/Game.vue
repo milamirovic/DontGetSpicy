@@ -1,22 +1,19 @@
 <template>
   <div >
   <div class="game d-flex flex-row justify-content-" v-bind:class="{'opacity':!started}">
-    <div class="map">
+    <div class="map" v-bind:class="{'disabled':!started}">
         <div v-bind:key="glPolje.index" v-for="glPolje in igra.glavnaPolja">
                <Polje v-bind:polje="glPolje" v-on:figuraIzabrana="izabranaFigura"/>
         </div>
-
         <div v-bind:key="outPolje.index" v-for="outPolje in igra.outPolja">
-               <Polje v-bind:polje="outPolje" v-on:figuraIzabrana="izabranaFigura"/>
-               
-        </div>
-       
+               <Polje v-bind:polje="outPolje" v-on:figuraIzabrana="izabranaFigura"/> 
+        </div>       
     </div>
-    <Korisnik class="crveni" v-bind:class="{'naPotezu':naPotezu=='crveni'}" v-bind:ime="crveni"/>
-    <Korisnik class="zeleni" v-bind:class="{'naPotezu':naPotezu=='zeleni'}" v-bind:ime="zeleni"/>
-    <Korisnik class="zuti" v-bind:class="{'naPotezu':naPotezu=='zuti'}" v-bind:ime="zuti"/>
-    <Korisnik class="plavi" v-bind:class="{'naPotezu':naPotezu=='plavi'}" v-bind:ime="plavi"/>
-    <button  v-on:click="baciKocku" style="position:absolute; top:70%;left:65%;font-size:200px; width:300px; height:300px;" class="btn btn-outline-info">{{kocka}}</button>
+    <Korisnik class="crveni" v-bind:class="{'naPotezu':naPotezu=='crveni'}" v-bind:ime="crveniUsername" v-bind:slika="crveniSlika"/>
+    <Korisnik class="zeleni" v-bind:class="{'naPotezu':naPotezu=='zeleni'}" v-bind:ime="zeleniUsername" v-bind:slika="zeleniSlika"/>
+    <Korisnik class="zuti" v-bind:class="{'naPotezu':naPotezu=='zuti'}" v-bind:ime="zutiUsername" v-bind:slika="zutiSlika"/>
+    <Korisnik class="plavi" v-bind:class="{'naPotezu':naPotezu=='plavi'}" v-bind:ime="plaviUsername" v-bind:slika="plaviSlika"/>
+    <button  v-on:click="baciKocku" style="position:absolute; top:70%;left:65%;font-size:200px; width:300px; height:300px;" class="btn btn-outline-info" v-bind:class="{'disabled':!started}">{{kocka}}</button>
   </div>
       <div v-if="!started" class="pos">
         Waiting for players to join... <div class="loader"></div>
@@ -34,8 +31,7 @@ import { Boja,Next } from '../models/Consts'
 import Igra from "../models/igra"
 import axios from "axios"
 import router from '../router/index.js'
- const connection =new HubConnectionBuilder().withUrl("https://localhost:5001/GameHub").build();
-  const connection2 =new HubConnectionBuilder().withUrl("https://localhost:5001/ChatHub").build();
+
 
 export default {
   name:"Game",
@@ -47,48 +43,60 @@ export default {
   },data() {
     return {
       started: false,
-      crveni:null,
-      plavi:null,
-      zuti:null,
-      zeleni:null,
-      igra:'',
       kocka:0,
-      naPotezu:Boja.naziv[0], 
-      pristiglePoruke:[]
+      naPotezu:Boja.naziv[0],
+      crveniSlika:null,
+      plaviSlika:null,
+      zutiSlika:null,
+      zeleniSlika:null,
+      crveniUsername:null,
+      plaviUsername:null,
+      zutiUsername:null,
+      zeleniUsername:null,
+      igra:'',
+      pristiglePoruke:[],
+      connection:"",
+      connection2:""
 
     }
   },
-  props:["accessCode","gameToken", "mojaBoja","username","guid","igraci"],
+  props:["accessCode","gameToken", "mojaBoja","username","slika","igraciSlike","igraciImena"],
   mounted()
-  {     
-    if(this.accessCode!=undefined)this.pristiglePoruke.push("Access code is: "+this.accessCode);
-    connection2.start().then(()=>
+  {   
+     this.connection =new HubConnectionBuilder().withUrl("https://localhost:5001/GameHub",{accessTokenFactory:()=>this.gameToken}).build();
+     this.connection2 =new HubConnectionBuilder().withUrl("https://localhost:5001/ChatHub",{accessTokenFactory:()=>this.gameToken}).build();
+
+     if(this.accessCode!=undefined)this.pristiglePoruke.push("Access code is: "+this.accessCode);
+
+    this.connection2.start().then(()=>
         {
-          connection2.invoke("StartChat",this.guid);
+          this.connection2.invoke("StartChat");
         })
 
-        connection2.on("userSentMessage",(message, sender) =>{
+        this.connection2.on("userSentMessage",(message, sender) =>{
            
-          this.pristiglePoruke.push(sender+" : "+message)
+          this.pristiglePoruke.unshift(sender+" :   "+message)
       }) 
         
         
     
       this.igra=new Igra();
-      this.$data[this.mojaBoja]=this.username;
-      connection.start().then(()=>
+      this.$data[this.mojaBoja+"Username"]=this.username;
+      this.$data[this.mojaBoja+"Slika"]="http://localhost:5000/Resources/Images/"+this.slika;
+      this.connection.start().then(()=>
         {
-          connection.invoke("JoinGameGroup",this.guid, this.username,this.mojaBoja);
+          this.connection.invoke("JoinGameGroup");
         })
      
-      connection.on("userJoined",(username,b) =>{
-            this.$data[b]=username;
+      this.connection.on("userJoined",(username,boja,slika) =>{ 
+            this.$data[boja+"Username"]=username;
+            this.$data[boja+"Slika"]="http://localhost:5000/Resources/Images/"+slika;
             if(this.sviPrisutni()==true)
             this.started=true;
 
       })  
 
-      connection.on("krajIgre",(pobednik) =>{
+      this.connection.on("krajIgre",(pobednik) =>{
             alert("pobednik je: "+pobednik);
           setTimeout(()=>
           {
@@ -97,7 +105,7 @@ export default {
               });
 
       
-      connection.on("kockaBacena",(vrKocke, next) =>{
+      this.connection.on("kockaBacena",(vrKocke, next) =>{
            this.kocka=vrKocke;
             if(next==true)
             {
@@ -109,7 +117,7 @@ export default {
            }
          
       }) 
-       connection.on("figuraPomerena",(potezi, next) =>{
+       this.connection.on("figuraPomerena",(potezi, next) =>{
           
           if(next==true)
            this.naPotezu=Next[this.naPotezu];
@@ -118,10 +126,17 @@ export default {
          
 
       }) 
-     if(this.igraci!=null) 
+     
+     if(this.igraciImena!=null&&this.igraciSlike!=null) 
      {
-      this.igraci.forEach((igrac,index) => {
-      this.$data[Boja.naziv[index]]=igrac;
+       console.log(this.igraciImena);
+       console.log(this.igraciSlike);
+      this.igraciImena.forEach((igrac,index) => {
+      this.$data[Boja.naziv[index]+"Username"]=igrac;
+      })
+
+      this.igraciSlike.forEach((igrac,index) => {
+      this.$data[Boja.naziv[index]+"Slika"]="http://localhost:5000/Resources/Images/"+igrac;
       })
       }
       
@@ -129,10 +144,9 @@ export default {
           this.started=true;
   },
   methods:{
-    sendMsg(ev)
+    sendMsg(msg)
     {
-     // console.log(ev);
-        connection2.invoke("SendMessage",this.guid, ev, this.username);
+        this.connection2.invoke("SendMessage", msg);
     },
     izabranaFigura(ev)
     {
@@ -151,7 +165,8 @@ export default {
     },
     sviPrisutni()
     { 
-      if(this.crveni==null||this.plavi==null||this.zuti==null||this.zeleni==null)
+      if(this.crveniSlika==null||this.plaviSlika==null||this.zutiSlika==null||this.zeleniSlika==null
+        || this.crveniUsername==null||this.plaviUsername==null||this.zutiUsername==null||this.zeleniUsername==null)
       return false;
       return true;
     },
@@ -229,8 +244,8 @@ export default {
 .chat
 {
    position: absolute;
-  left: 55%;
-  top: 20%;
+  left: 65%;
+  top: 5%;
   width: 500px;
 }
 
@@ -250,4 +265,9 @@ export default {
 {
   border: 5px solid red;
 }
+.disabled
+{
+  pointer-events:none;
+}
+
 </style>

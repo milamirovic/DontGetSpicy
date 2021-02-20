@@ -284,6 +284,18 @@ namespace DontGetSpicy.Models
             }
             return null;
         }
+
+
+
+
+
+
+
+
+
+
+
+        
        /* public static Tuple<int,string,int,int> proveraKretanja(Figura figura, int kocka)
        {    
           

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,11 +11,14 @@ using DontGetSpicy.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -57,8 +61,23 @@ namespace Web_API
                        IssuerSigningKey=new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
 
                    } ;
-                   
+                   opts.Events=new JwtBearerEvents
+                   {
+                        OnMessageReceived=context =>{
+                            var accessToken=context.Request.Query["access_token"];
+                            if(string.IsNullOrEmpty(accessToken)==false){
+                                context.Token=accessToken;
 
+                            }
+                            return Task.CompletedTask;
+                        }
+                   };
+                   
+            services.Configure<FormOptions>(o => {
+            o.ValueLengthLimit = int.MaxValue;
+            o.MultipartBodyLengthLimit = int.MaxValue;
+            o.MemoryBufferThreshold = int.MaxValue;
+                 });
 
             });
             services.AddSignalR();//services.AddScoped<HubProvider>();
@@ -89,9 +108,17 @@ namespace Web_API
 
             app.UseHttpsRedirection();
 
-             app.UseRouting();JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            app.UseRouting();JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             app.UseAuthentication();
             app.UseCors("Cors");
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
+                    RequestPath = new PathString("/Resources")
+                });
+
+
             app.UseAuthorization();
             //app.userouting()?
 

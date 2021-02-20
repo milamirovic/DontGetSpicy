@@ -4,9 +4,9 @@
     <div class="align-self-center rounder-lg d-flex flex-column align-items-center p-4">
       <!-- <img src="https://i.imgur.com/Wt7up6Q.png" class="w-25 h-25"> -->
       <img src="../assets/signupXSmall.png" class="w-50 h-50">
-      <input type="text" placeholder="email" class="input is-rounded my-2 w-75"/>
-      <input type="text" placeholder="username" class="input is-rounded my-2 w-75"/>
-      <input type="text" placeholder="password" class="input is-rounded my-2 w-75"/>
+      <input type="text" placeholder="email" class="input is-rounded my-2 w-75" required/>
+      <input type="text" placeholder="username" class="input is-rounded my-2 w-75" required/>
+      <input type="text" placeholder="password" class="input is-rounded my-2 w-75" required/>
       <button type="submit" name="Signup" class="mt-3 btn btn-info w-75">Signup</button>
     </div>
   </div>

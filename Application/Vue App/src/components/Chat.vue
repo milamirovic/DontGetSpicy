@@ -1,12 +1,12 @@
 <template>
     <div>
-    <div style="overflow:scroll; max-height:200px" class="border border-info rounded bg-light">
+    <div style="overflow-y:scroll; height:250px" class="chatDiv border border-info rounded bg-light">
         <div v-bind:key="poruka" v-for="poruka in poruke" >
                <div v-bind:poruka="poruka">{{poruka}}</div>        
         </div>
      </div>   
         <div class="d-flex flex-row">
-            <input v-model="novaPoruka" type="text" class="input is-info">
+            <input v-model="novaPoruka" type="text" class="input is-info" @keyup="addMsgEnter">
             <button v-on:click="addMsg" class="btn btn-info">
                 <i class="fa fa-paper-plane" aria-hidden="true"></i>
             </button>
@@ -33,11 +33,19 @@ export default {
     {
         
             addMsg()
-            {   this.poruke.push("ME : "+this.novaPoruka);
+            {   
+                if(this.novaPoruka=="") return;
+                this.poruke.unshift("ME :   "+this.novaPoruka);
                 this.$emit("messageSent", this.novaPoruka);
                 this.novaPoruka="";
-            }
+            },
+            addMsgEnter(ev)
+            {
+                if (ev.keyCode === 13) 
+                this.addMsg();
+                
         
+            }
     }
 
     
@@ -48,4 +56,9 @@ export default {
 
 <style scoped>
 
+.chatDiv
+{
+    display: flex;
+     flex-direction: column-reverse;
+}
 </style>

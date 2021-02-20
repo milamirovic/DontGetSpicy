@@ -25,7 +25,7 @@ namespace DontGetSpicy.Models
         public int brojPobeda { get; set; }
 
         [Column("Slika")]
-        public string slika { get; set; }
+        public string slika { get; set; }="default.png";
         [Column("username")]
         public string username { get; set; }
 

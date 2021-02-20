@@ -18,8 +18,16 @@ namespace DontGetSpicy.DataProvider
         {
             return await db.Korisnici.Where(Korisnik=>Korisnik.email==email).FirstOrDefaultAsync();
         }
-
-        public static async Task<List<Igra>> GetKorisnikIgre(DontGetSpicyContext db, string email)
+        public static async Task<Korisnik> GetKorisnik(DontGetSpicyContext db, int id)
+        {
+            return await db.Korisnici.Where(Korisnik=>Korisnik.ID==id).FirstOrDefaultAsync();
+        }
+        public static async Task SnimiKorisnika(DontGetSpicyContext db, Korisnik korisnik)
+        {
+            db.Korisnici.Update(korisnik);
+            await db.SaveChangesAsync();
+        }
+        public static async Task<List<Igra>> GetKorisnikPauziraneIgre(DontGetSpicyContext db, string email)
         {
             return await db.Igre.Include(Igra=>Igra.kreatorIgre).Where(igra => igra.status==statusIgre.pauzirana&&igra.kreatorIgre.email==email).ToListAsync();
         }

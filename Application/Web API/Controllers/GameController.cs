@@ -55,7 +55,7 @@ namespace DontGetSpicy.Controllers
             {
                 OkObjectResult result=(OkObjectResult) res;
                 dynamic val=result.Value;
-                return Ok(new {token=val.token,accessCode=novaIgra.accessCode, username=korisnik.username, guid=novaIgra.groupNameGUID});
+                return Ok(new {token=val.token,accessCode=novaIgra.accessCode, username=korisnik.username, slika=korisnik.slika});
             }
             return BadRequest();
         }
@@ -79,8 +79,8 @@ namespace DontGetSpicy.Controllers
                   joinGame.status=statusIgre.uToku;
                }
                await GameProvider.AzurirajIgru(db,joinGame);
-               
-               return Ok(new {token=JWTGenerator.GenerateGameToken(korisnik,joinGame,boja),username=korisnik.username,guid=joinGame.groupNameGUID,igraci=joinGame.vratiIgrace()});
+            
+               return Ok(new {token=JWTGenerator.GenerateGameToken(korisnik,joinGame,boja),username=korisnik.username,slika=korisnik.slika,igraciImena=joinGame.vratiIgrace(),igraciSlike=await GameProvider.slikeIgraca(db,joinGame)});
             }
             else return Forbid();
         }
@@ -92,7 +92,7 @@ namespace DontGetSpicy.Controllers
             
             string igraId=User.FindFirstValue("sub");
             Boja bojaIgraca= Enum.Parse<Boja>(User.FindFirstValue("Boja"));
-            Igra game=await GameProvider.NadjiIgruFigure(db,Int32.Parse(igraId));
+            Igra game=await GameProvider.NadjiIgruFigure(db,igraId);
             if(game==null) return NotFound();
 
             if(game.status!=statusIgre.uToku||game.naPotezu!=bojaIgraca||game.aleaIactaEst) return Forbid();
@@ -122,7 +122,7 @@ namespace DontGetSpicy.Controllers
         {
             string igraId=User.FindFirstValue("sub");
             Boja bojaIgraca= Enum.Parse<Boja>(User.FindFirstValue("Boja"));
-            Igra game=await GameProvider.NadjiIgruFigure(db,Int32.Parse(igraId));
+            Igra game=await GameProvider.NadjiIgruFigure(db,igraId);
             if(game==null) return NotFound();
 
             if(game.status!=statusIgre.uToku||game.naPotezu!=bojaIgraca||!game.aleaIactaEst) return Forbid();

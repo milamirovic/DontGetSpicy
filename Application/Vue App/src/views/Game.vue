@@ -9,10 +9,10 @@
                <Polje v-bind:polje="outPolje" v-on:figuraIzabrana="izabranaFigura"/> 
         </div>       
     </div>
-    <Korisnik class="crveni" v-bind:class="{'naPotezu':naPotezu=='crveni'}" v-bind:ime="crveniUsername" v-bind:slika="crveniSlika"/>
-    <Korisnik class="zeleni" v-bind:class="{'naPotezu':naPotezu=='zeleni'}" v-bind:ime="zeleniUsername" v-bind:slika="zeleniSlika"/>
-    <Korisnik class="zuti" v-bind:class="{'naPotezu':naPotezu=='zuti'}" v-bind:ime="zutiUsername" v-bind:slika="zutiSlika"/>
-    <Korisnik class="plavi" v-bind:class="{'naPotezu':naPotezu=='plavi'}" v-bind:ime="plaviUsername" v-bind:slika="plaviSlika"/>
+    <Korisnik class="crveni" v-bind:naPotezu="naPotezu=='crveni'" v-bind:ime="crveniUsername" v-bind:slika="crveniSlika"/>
+    <Korisnik class="zeleni" v-bind:naPotezu="naPotezu=='zeleni'" v-bind:ime="zeleniUsername" v-bind:slika="zeleniSlika"/>
+    <Korisnik class="zuti" v-bind:naPotezu="naPotezu=='zuti'" v-bind:ime="zutiUsername" v-bind:slika="zutiSlika"/>
+    <Korisnik class="plavi" v-bind:naPotezu="naPotezu=='plavi'" v-bind:ime="plaviUsername" v-bind:slika="plaviSlika"/>
     <button  v-on:click="baciKocku" style="position:absolute; top:70%;left:65%;font-size:200px; width:300px; height:300px;" class="btn btn-outline-info" v-bind:class="{'disabled':!started}">{{kocka}}</button>
   </div>
       <div v-if="!started" class="pos">
@@ -56,8 +56,8 @@ export default {
       igra:'',
       pristiglePoruke:[],
       connection:"",
-      connection2:""
-
+      connection2:"",
+      inChat:[]
     }
   },
   props:["accessCode","gameToken", "mojaBoja","username","slika","igraciSlike","igraciImena"],
@@ -82,7 +82,7 @@ export default {
     
       this.igra=new Igra();
       this.$data[this.mojaBoja+"Username"]=this.username;
-      this.$data[this.mojaBoja+"Slika"]="http://localhost:5000/Resources/Images/"+this.slika;
+      this.$data[this.mojaBoja+"Slika"]=this.slika;
       this.connection.start().then(()=>
         {
           this.connection.invoke("JoinGameGroup");
@@ -90,7 +90,7 @@ export default {
      
       this.connection.on("userJoined",(username,boja,slika) =>{ 
             this.$data[boja+"Username"]=username;
-            this.$data[boja+"Slika"]="http://localhost:5000/Resources/Images/"+slika;
+            this.$data[boja+"Slika"]=slika;
             if(this.sviPrisutni()==true)
             this.started=true;
 
@@ -129,19 +129,20 @@ export default {
      
      if(this.igraciImena!=null&&this.igraciSlike!=null) 
      {
-       console.log(this.igraciImena);
-       console.log(this.igraciSlike);
+       
       this.igraciImena.forEach((igrac,index) => {
       this.$data[Boja.naziv[index]+"Username"]=igrac;
       })
 
       this.igraciSlike.forEach((igrac,index) => {
-      this.$data[Boja.naziv[index]+"Slika"]="http://localhost:5000/Resources/Images/"+igrac;
+      this.$data[Boja.naziv[index]+"Slika"]=igrac;
       })
       }
       
      if(this.sviPrisutni()==true)
           this.started=true;
+
+      this.inChat=["crveni","zeleni",]
   },
   methods:{
     sendMsg(msg)
@@ -158,8 +159,7 @@ export default {
                         }
          axios.get(`https://localhost:5001/Game/MoveFigure?figuraIndex=${ev.index}`,loginConfig)
                     .then(() =>
-                    { 
-                      // console.log("figura pomerena");
+                    {
                     }).catch(err =>console.log(err));
       }
     },
@@ -181,7 +181,6 @@ export default {
          axios.get(`https://localhost:5001/Game/ThrowCube`,loginConfig)
                     .then(() =>
                     { 
-                       //console.log("kocka bacena");
                     }).catch(err =>console.log(err));
       }
     }
@@ -261,10 +260,7 @@ export default {
     
     
 }
-.naPotezu
-{
-  border: 5px solid red;
-}
+
 .disabled
 {
   pointer-events:none;

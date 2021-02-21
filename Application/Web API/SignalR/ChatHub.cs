@@ -26,6 +26,11 @@ namespace DontGetSpicy.SignalR
             Korisnik korisnik=await KorisnikProvider.GetKorisnik(db,Context.User.FindFirstValue("email"));
             await Clients.GroupExcept(Context.User.FindFirstValue("sub"),Context.ConnectionId).SendAsync("userSentMessage", message, korisnik.username);
         }
+        public async Task DisableChat()
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId,Context.User.FindFirstValue("sub") );
+            await Clients.Group(Context.User.FindFirstValue("sub")).SendAsync("userDisabledChat",Context.User.FindFirstValue("Boja"));
+        }
         
        
    }

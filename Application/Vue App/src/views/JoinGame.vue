@@ -11,7 +11,7 @@
         <button class="btn btn-info" v-on:click="joinGame">Join game</button><br><br>
         </div>
         </div>
-         <BojaSelector v-on:colorChanged="promeniBoju" />
+         <BojaSelector  v-on:colorChanged="promeniBoju" v-bind:crveniZauzet="crveniZauzet" v-bind:zeleniZauzet="zeleniZauzet" v-bind:zutiZauzet="zutiZauzet" v-bind:plaviZauzet="plaviZauzet" />
 
     </div>
 </template>
@@ -28,15 +28,17 @@ export default {
     data() {
     return {
       accessCode: '',
-      selektovanaBoja:'crveni'
-      
+      selektovanaBoja:'crveni',
+      crveniZauzet:false,
+      zeleniZauzet:false,
+      zutiZauzet:false,
+      plaviZauzet:false
     }
   },
     methods:{
         promeniBoju(ev)
         {
                this.selektovanaBoja=ev;
-               console.log(this.selektovanaBoja);
         },
         newGame()
         {   let boja=this.selektovanaBoja;
@@ -58,10 +60,19 @@ export default {
                      }}
             axios.get(`https://localhost:5001/Game/JoinGame?boja=${boja}&accessCode=${this.accessCode}`,loginConfig)
             .then((data) =>
-        { 
-           
+        { console.log(data);
         router.push({ name: 'Game', params:{gameToken:data.data.token,mojaBoja:this.selektovanaBoja,username:data.data.username,slika:data.data.slika,igraciImena:data.data.igraciImena,igraciSlike:data.data.igraciSlike} })
-         }).catch(err =>console.log(err));
+         }).catch(err =>
+         {
+            if(err.response.status==403)
+            {    alert("Color already taken! Pick again")
+                let zauzeteBoje=err.response.data;
+                 zauzeteBoje.forEach(element => {
+                     this.$data[element+"Zauzet"]=true
+                 });
+            }
+
+         });
         }
 
 

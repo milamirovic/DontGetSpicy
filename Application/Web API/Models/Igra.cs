@@ -248,6 +248,16 @@ namespace DontGetSpicy.Models
             if(username==null&&id==0) return true;
             return false;       
         }
+        public List<string> zauzeteBoje()
+        {
+            List<string> boje=new List<string>();
+            foreach(Boja b in Enum.GetValues(typeof (Boja)))
+            { 
+               if(!slobodnaBoja(b))
+               boje.Add(b.ToString());
+            }
+            return boje;
+        }
         public void dodajIgraca(Boja boja, Korisnik dodaj)
         {
             this.GetType().GetProperty(boja.ToString()+"IgracId").SetValue(this,dodaj.ID);

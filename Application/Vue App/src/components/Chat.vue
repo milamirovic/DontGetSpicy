@@ -2,7 +2,7 @@
     <div>
     <div style="overflow-y:scroll; height:250px" class="chatDiv border border-info rounded bg-light">
         <div v-bind:key="poruka" v-for="poruka in poruke" >
-               <div v-bind:poruka="poruka">{{poruka}}</div>        
+               <div style="word-wrap: break-word;" v-bind:poruka="poruka">{{poruka}}</div>        
         </div>
      </div>   
         <div class="d-flex flex-row">

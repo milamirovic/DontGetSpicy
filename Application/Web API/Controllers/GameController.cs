@@ -69,7 +69,7 @@ namespace DontGetSpicy.Controllers
             if(korisnik==null) return BadRequest();
             Igra joinGame=await GameProvider.NadjiIgru(db,accessCode);
             if(joinGame==null) return NotFound();
-            if(joinGame.status!=statusIgre.cekanjeIgraca) return Forbid();
+            if(joinGame.status!=statusIgre.cekanjeIgraca) return BadRequest();
             
             if(joinGame.slobodnaBoja(boja))
             {
@@ -82,7 +82,7 @@ namespace DontGetSpicy.Controllers
             
                return Ok(new {token=JWTGenerator.GenerateGameToken(korisnik,joinGame,boja),username=korisnik.username,slika=korisnik.slika,igraciImena=joinGame.vratiIgrace(),igraciSlike=await GameProvider.slikeIgraca(db,joinGame)});
             }
-            else return Forbid();
+            else return new ObjectResult(joinGame.zauzeteBoje()) { StatusCode = 403};
         }
         [Authorize]
         [Route("ThrowCube")]

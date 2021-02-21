@@ -1,7 +1,7 @@
 <template>
-    <div border border-info>
-        <h2>{{ime}}</h2><br>
-        <img :src="slika" width="50px" height="50px">
+    <div v-if="ime!=null&&slika!=null">
+        <center ><u >{{ime}}</u></center>
+        <img :src="generisiNazivSlike()" width="100px" height="100px" v-bind:class="{'naPotezu':naPotezu}">
     </div>
 </template>
 
@@ -9,9 +9,16 @@
 <script>
 export default {
     name:"Korisnik",
-    props:["ime","slika"]
+    props:["ime","slika","naPotezu"],
+    methods:
+    {
+      generisiNazivSlike()
+      {
+        return "http://localhost:5000/Resources/Images/"+this.slika;
+      }
+    }
 
-    
+  //  border border-info
 }
 </script>
 
@@ -20,5 +27,15 @@ export default {
 *
 {
     color: black;
+}
+img
+{
+  height: 100px;
+  border-radius: 20px 20px;
+}
+.naPotezu
+{
+  
+  box-shadow: 10px 10px 20px #4ad557;
 }
 </style>

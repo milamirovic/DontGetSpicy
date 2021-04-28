@@ -20,7 +20,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
-
 namespace DontGetSpicy.Controllers
 {  
    
@@ -42,12 +41,13 @@ namespace DontGetSpicy.Controllers
         [Authorize]
         [Route("NewGame")]
         [HttpGet]
-        public async Task<IActionResult> NovaIgra(Boja boja)
+        public async Task<IActionResult> NovaIgra(Boja boja,bool privateGame)
         {
             string email=User.FindFirstValue("email");
             Korisnik korisnik=await KorisnikProvider.GetKorisnik(db,email);
             if(korisnik==null) return BadRequest();
             Igra novaIgra=new Igra(korisnik);
+            novaIgra.privateGame=privateGame;
             await GameProvider.dodajIgru(db,novaIgra);
             IActionResult res=(await this.PridruziSeIgri(boja,novaIgra.accessCode));
             
@@ -111,7 +111,7 @@ namespace DontGetSpicy.Controllers
                 
             }
             await GameProvider.AzurirajIgru(db,game);
-            await _gameHub.Clients.Group(game.groupNameGUID).SendAsync("kockaBacena",vrKocke,next);  
+            await GameHubHelper.kockaBacenaNotifyAsync(_gameHub,game.groupNameGUID,vrKocke,next);
             return Ok();
             
         }
@@ -142,26 +142,98 @@ namespace DontGetSpicy.Controllers
             await GameProvider.AzurirajIgru(db,game);
 
             await GameProvider.AzurirajPotez(db,poslednjiPotez);
-             await _gameHub.Clients.Group(game.groupNameGUID).SendAsync("figuraPomerena",potezi,poslednjiPotez.vrKocke!=6); 
-             if(game.kraj()!=null)  await _gameHub.Clients.Group(game.groupNameGUID).SendAsync("krajIgre",game.kraj()); 
+            await GameHubHelper.figuraPomerenaNotifyAsync(_gameHub,game.groupNameGUID,potezi,poslednjiPotez.vrKocke!=6);
+             if(game.kraj()!=null)  await GameHubHelper.krajIgreNotifyAsync(_gameHub,game.groupNameGUID,game.kraj());
             
             return Ok();
             
         }
+        [Authorize]
+        [Route("PauseGame")]
+        [HttpGet]
+        public async Task<IActionResult> PauzirajIgru()
+        {
+             string igraId=User.FindFirstValue("sub");
+             string email=User.FindFirstValue("email");
+             Boja bojaIgraca= Enum.Parse<Boja>(User.FindFirstValue("Boja"));
+             Korisnik korisnik=await KorisnikProvider.GetKorisnik(db,email);
+             Igra game=await GameProvider.NadjiIgruId(db,igraId);
+             if(game.kreatorIgre.ID!=korisnik.ID) return BadRequest();
+             Potez poslednji=await GameProvider.getPoslednjiPotezIgre(db,game);
+             if(game.status!=statusIgre.uToku||!game.privateGame||(game.status==statusIgre.uToku&&game.naPotezu==poslednji.potezOdigrao)) return Forbid();
+             game.status=statusIgre.pauzirana;
+             await GameProvider.AzurirajIgru(db,game);
+             await GameHubHelper.pauzirajIgruNotifyAsync(_gameHub,game.groupNameGUID);
+             return Ok();
+        }
+        [Authorize]
+        [Route("JoinPublicGame")]
+        [HttpGet]
+        public async Task<IActionResult> JoinPublicGame(Boja boja)
+        {
+           Igra game=await GameProvider.NadjiJavnuIgru(db,boja,_config);
+           if(game==null) 
+           {
+              return await this.NovaIgra(boja,false);
+                              
+           }
+           return await this.PridruziSeIgri(boja,game.accessCode);
+        
+        
+        }
 
-
-    
-
-
-
-
-
-
-
-
-
-
-
+        [Authorize]
+        [Route("ResumeRequest")]
+        [HttpGet]
+        public async Task<IActionResult> ResumeRequest(string id)
+        {
+             string email=User.FindFirstValue("email");
+             Korisnik korisnik=await KorisnikProvider.GetKorisnik(db,email);
+             Igra game=await GameProvider.NadjiIgru(db,id);
+             if(game.kreatorIgre.ID!=korisnik.ID) return BadRequest();
+             if(game.status!=statusIgre.pauzirana) return Forbid();
+             game.status=statusIgre.cekanjeIgracaPause;
+             await GameProvider.AzurirajIgru(db,game);
+             return await this.RejoinGame(id);
+        }
+        [Authorize]
+        [Route("RejoinGame")]
+        [HttpGet]
+        public async Task<IActionResult> RejoinGame(string id)
+        {
+             string email=User.FindFirstValue("email");
+             Korisnik korisnik=await KorisnikProvider.GetKorisnik(db,email);
+             Igra game=await GameProvider.NadjiIgru(db,id);
+             if(game.status!=statusIgre.cekanjeIgracaPause&&(game.crveniIgracId!=korisnik.ID&&game.zeleniIgracId!=korisnik.ID&&game.zutiIgracId!=korisnik.ID&&game.plaviIgracId!=korisnik.ID)) return Forbid();
+             Boja bojaKorisnika=Boja.crveni;
+            foreach(Boja b in Enum.GetValues(typeof (Boja)))
+            { 
+               if((int)game.GetType().GetProperty(b.ToString()+"IgracId").GetValue(game)==korisnik.ID)
+               bojaKorisnika=b;
+            }
+            if(korisnik.ID==game.kreatorIgre.ID)
+             return Ok(new {naPotezu=game.naPotezu.ToString(),boja=bojaKorisnika.ToString(),accessCode=game.accessCode,figure=game.figure,token=JWTGenerator.GenerateGameToken(korisnik,game,bojaKorisnika),username=korisnik.username,slika=korisnik.slika,igraciImena=game.vratiIgrace(),igraciSlike=await GameProvider.slikeIgraca(db,game)});
+            else
+             return Ok(new {naPotezu=game.naPotezu.ToString(),boja=bojaKorisnika.ToString(),figure=game.figure,token=JWTGenerator.GenerateGameToken(korisnik,game,bojaKorisnika),username=korisnik.username,slika=korisnik.slika,igraciImena=game.vratiIgrace(),igraciSlike=await GameProvider.slikeIgraca(db,game)});
+        }
+        [Authorize]
+        [Route("ContinueGame")]
+        [HttpGet]
+        public async Task<IActionResult> ContinueGame()
+        {
+             string igraId=User.FindFirstValue("sub");
+             string email=User.FindFirstValue("email");
+             Boja bojaIgraca= Enum.Parse<Boja>(User.FindFirstValue("Boja"));
+             Korisnik korisnik=await KorisnikProvider.GetKorisnik(db,email);
+             Igra game=await GameProvider.NadjiIgruId(db,igraId);
+             if(game.kreatorIgre.ID!=korisnik.ID) return BadRequest();
+             
+             if(game.status!=statusIgre.cekanjeIgracaPause) return Forbid();
+             game.status=statusIgre.uToku;
+             await GameProvider.AzurirajIgru(db,game);
+             await GameHubHelper.nastaviIgru(_gameHub,game.groupNameGUID);
+             return Ok();
+        }
 
 
        /* [Route("testPomeranja")]

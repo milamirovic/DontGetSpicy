@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Nanoid;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace DontGetSpicy.DataProvider
 {
@@ -23,14 +24,19 @@ namespace DontGetSpicy.DataProvider
        
         public static async Task<Igra> NadjiIgru(DontGetSpicyContext db, string accessCode)
         {
-            return await db.Igre.Include(igra=>igra.kreatorIgre)
+            return await db.Igre.Include(igra=>igra.kreatorIgre).Include(Igra=>Igra.figure)
                                 .Where(igra => igra.accessCode==accessCode).FirstOrDefaultAsync();
+        }
+         public static async Task<Igra> NadjiIgruId(DontGetSpicyContext db, string id)
+        {
+            return await db.Igre.Include(igra=>igra.kreatorIgre)
+                                .Where(igra => igra.groupNameGUID==id).FirstOrDefaultAsync();
         }
 
       
         public static async Task<Igra> NadjiIgruFigure(DontGetSpicyContext db, string id)
         {
-            return await db.Igre.Include(igra=>igra.figure).Where(Igra=>Igra.groupNameGUID==id).FirstOrDefaultAsync();
+            return await db.Igre.Include(igra=>igra.figure).Include(Igra=>Igra.kreatorIgre).Where(Igra=>Igra.groupNameGUID==id).FirstOrDefaultAsync();
         }
         public static async Task dodajPotez(DontGetSpicyContext db,Potez noviPotez)
         {
@@ -60,6 +66,34 @@ namespace DontGetSpicy.DataProvider
                rez.Add(await KorisnikProvider.GetKorisnik(db,igra.plaviIgracId));
                return rez.Select(kor =>(kor!=null)?kor.slika:null).ToList();
         }
+        public static async Task<Igra> NadjiJavnuIgru(DontGetSpicyContext db, Boja boja,IConfiguration config)
+        {
+            Igra igraRet;
+
+            SqlConnection conn=new SqlConnection(config.GetConnectionString("DontGetSpicyCS"));
+            string availableQuery=$"select top 1 id from Igra where {boja.ToString()}Username is NULL and {boja.ToString()}IgracId=0 and privateGame=0 and Status=2";
+            SqlCommand command=new SqlCommand(availableQuery,conn);
+            SqlDataReader dataReader;
+          
+            conn.Open();
+            dataReader=await command.ExecuteReaderAsync();
+            dataReader.Read();
+            if(dataReader.HasRows)
+            {
+                int id=dataReader.GetInt32(0); 
+                igraRet=db.Igre.Find(id);
+
+            }
+            else
+            {
+                igraRet=null;
+            }            
+            command.Dispose();
+            conn.Close();
+            return igraRet;
+
+        }
+        
 
 
 
@@ -77,7 +111,7 @@ namespace DontGetSpicy.DataProvider
 
 
 
-       /* public static async Task dodajIgraca(DontGetSpicyContext db, IConfiguration config,Korisnik pridruzi, Boja boja, Igra igra)
+        public static async Task dodajIgraca(DontGetSpicyContext db, IConfiguration config,Korisnik pridruzi, Boja boja, Igra igra)
         {      
              SqlConnection conn=new SqlConnection(config.GetConnectionString("DontGetSpicyCS"));
                 string updateQuery=$"UPDATE Igra SET {boja.ToString()}Username='{pridruzi.username}',{boja.ToString()}IgracId={pridruzi.ID} WHERE Igra.ID={igra.ID}";
@@ -108,7 +142,7 @@ namespace DontGetSpicy.DataProvider
             else
             return false;
           
-        }*/
+        }
         
     }
 }

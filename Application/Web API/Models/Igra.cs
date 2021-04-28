@@ -37,7 +37,8 @@ namespace DontGetSpicy.Models
     public enum statusIgre{
         pauzirana,
         uToku,
-        cekanjeIgraca
+        cekanjeIgraca,
+        cekanjeIgracaPause
     }
    
 
@@ -72,6 +73,7 @@ namespace DontGetSpicy.Models
         public List<Potez> potezi { get; set; }
         public List<Figura> figure { get; set; }
         public string groupNameGUID { get; set; }
+        public bool privateGame { get; set; }=false;
 
        #region staticMembers
         

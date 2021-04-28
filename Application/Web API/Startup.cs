@@ -37,7 +37,7 @@ namespace Web_API
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
+        { 
             services.AddCors(opts=>
             {
                 opts.AddPolicy("Cors", builder => builder.WithOrigins("http://localhost:8080").AllowAnyMethod().AllowAnyHeader().AllowCredentials().Build());

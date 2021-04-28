@@ -29,7 +29,10 @@ namespace DontGetSpicy.SignalR
         public async Task DisableChat()
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId,Context.User.FindFirstValue("sub") );
-            await Clients.Group(Context.User.FindFirstValue("sub")).SendAsync("userDisabledChat",Context.User.FindFirstValue("Boja"));
+        }
+        public async Task Reconnect2Chat()
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.FindFirstValue("sub"));
         }
         
        

@@ -4,14 +4,16 @@ using DontGetSpicy.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Web_API.Migrations
 {
     [DbContext(typeof(DontGetSpicyContext))]
-    partial class DontGetSpicyContextModelSnapshot : ModelSnapshot
+    [Migration("20210227154239_v11")]
+    partial class v11
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,9 +78,6 @@ namespace Web_API.Migrations
 
                     b.Property<string>("plaviUsername")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("privateGame")
-                        .HasColumnType("bit");
 
                     b.Property<int>("status")
                         .HasColumnType("int")

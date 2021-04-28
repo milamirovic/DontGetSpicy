@@ -22,6 +22,10 @@ namespace DontGetSpicy.SignalR
             await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.FindFirstValue("sub"));
             await Clients.GroupExcept(Context.User.FindFirstValue("sub"),Context.ConnectionId).SendAsync("userJoined",kor.username,Context.User.FindFirstValue("Boja"),kor.slika);
         }
+        public async Task LeaveGameHub()
+        {        
+          await Groups.RemoveFromGroupAsync(Context.ConnectionId,Context.User.FindFirstValue("sub") );
+        }
         
 
        

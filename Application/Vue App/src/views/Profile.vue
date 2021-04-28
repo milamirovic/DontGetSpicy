@@ -64,12 +64,11 @@ export default {
              axios.get(`https://localhost:5001/Korisnik/PodaciKorisnika`,loginConfig)
                     .then((data) =>
                     { 
-
-                        this.korisnik=data.data.korisnik;
-                         let int=5;   
-                        let levelMax=1
-                        this.korisnik.slika="http://localhost:5000/Resources/Images/"+this.korisnik.slika;
-                     
+                       
+                        this.korisnik=data.data.korisnik; 
+                        this.korisnik.slika="https://localhost:5001/Resources/Images/"+this.korisnik.slika;
+                        let int=5;   
+                        let levelMax=1                 
                         
                         while(int==5)
                         {

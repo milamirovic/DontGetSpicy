@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace DontGetSpicy.Models
 {
@@ -15,6 +16,7 @@ namespace DontGetSpicy.Models
         public int ID { get; set; }
         public int index { get; set; }
         public Boja boja{ get; set; }
+        [JsonIgnore]
         public Igra igra { get; set; }
         
         public Figura()

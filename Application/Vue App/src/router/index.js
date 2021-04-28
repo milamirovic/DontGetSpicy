@@ -35,12 +35,12 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/Signup.vue')
   },{
-    path: '/joinGame',
-    name: 'JoinGame',
+    path: '/PlayGame',
+    name: 'PlayGame',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/JoinGame.vue'),
+    component: () => import(/* webpackChunkName: "about" */ '../views/PlayGame.vue'),
     props:true
   },
   {
@@ -52,6 +52,15 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/Profile.vue'),
     
+  },
+  {
+    path: '/SelectColor',
+    name: 'SelectColor',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/BojaSelector.vue'),
+    props:true
   }
 
 ]

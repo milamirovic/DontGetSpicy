@@ -4,7 +4,7 @@
       <router-link to="/" class="mx-2">Don'tGetSpicy</router-link> 
       <router-link to="/login" class="mx-2" v-if="this.loginToken==''">Login</router-link>  
       <router-link to="/signup" class="mx-2" v-if="this.loginToken==''">Signup</router-link>
-      <router-link :to="{name:'JoinGame', params:{loginToken:this.loginToken}}"  class="mx-2" v-if="this.loginToken!==''">Join Game</router-link>
+      <router-link :to="{name:'PlayGame', params:{loginToken:this.loginToken}}"  class="mx-2" v-if="this.loginToken!==''">Play Game</router-link>
       <router-link :to="{name:'Profile', params:{loginToken:this.loginToken}}" v-if="this.loginToken!==''">Profile</router-link>
       
     </div>

@@ -1,7 +1,8 @@
 <template>
     <div v-if="ime!=null&&slika!=null">
+        
+        <img :src="slika" width="100px" height="100px" v-bind:class="{'naPotezu':naPotezu}">
         <center ><u >{{ime}}</u></center>
-        <img :src="generisiNazivSlike()" width="100px" height="100px" v-bind:class="{'naPotezu':naPotezu}">
     </div>
 </template>
 
@@ -12,13 +13,12 @@ export default {
     props:["ime","slika","naPotezu"],
     methods:
     {
-      generisiNazivSlike()
-      {
-        return "http://localhost:5000/Resources/Images/"+this.slika;
-      }
+     
+    },
+    mounted()
+    {
+     
     }
-
-  //  border border-info
 }
 </script>
 
@@ -36,6 +36,6 @@ img
 .naPotezu
 {
   
-  box-shadow: 10px 10px 20px #4ad557;
+  box-shadow: 10px 10px 20px #17a2b8;
 }
 </style>

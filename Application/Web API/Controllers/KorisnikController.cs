@@ -15,6 +15,7 @@ using System.IO;
 using System.Net.Http.Headers;
 using System;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace DontGetSpicy.Controllers
 {
@@ -23,11 +24,13 @@ namespace DontGetSpicy.Controllers
     public class KorisnikController : ControllerBase
     {
       
-        public DontGetSpicyContext db { get;set; }
+        private DontGetSpicyContext db { get;set; }
+        private readonly IConfiguration _config;
 
-        public KorisnikController(DontGetSpicyContext context)
+        public KorisnikController(DontGetSpicyContext context,IConfiguration c)
         {
             db = context;
+            _config=c;
         }
        
         [AllowAnonymous]
@@ -81,7 +84,7 @@ namespace DontGetSpicy.Controllers
                         }
                         if(korisnik.slika.CompareTo(new Korisnik().slika)!=0)
                         {
-                            System.IO.FileInfo oldPic = new FileInfo( Path.Combine(pathToSave,korisnik.slika));
+                            System.IO.FileInfo oldPic = new FileInfo( Path.Combine(Directory.GetCurrentDirectory(),korisnik.slika));
                              oldPic.Delete(); 
 
 
@@ -105,30 +108,8 @@ namespace DontGetSpicy.Controllers
             
         }
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-         [Authorize]
-        [Route("IgreKorisnika")]
+        [Authorize]
+        [Route("MyPausedGames")]
         [HttpGet]
         public async Task<IActionResult> IgreKorisnika()
         {  

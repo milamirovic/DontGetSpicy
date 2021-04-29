@@ -31,6 +31,16 @@ namespace DontGetSpicy.DataProvider
         {
             return await db.Igre.Include(Igra=>Igra.kreatorIgre).Where(igra => igra.status==statusIgre.pauzirana&&igra.kreatorIgre.email==email).ToListAsync();
         }
+        public static async Task<bool> postojiKorisnik(DontGetSpicyContext db, string username,string email)
+        {
+            return (await db.Korisnici.Where(Korisnik=>Korisnik.username==username||Korisnik.email==email).FirstOrDefaultAsync()!=null);
+        }
+        public static async Task dodajKorisnika(DontGetSpicyContext db, Korisnik noviKorisnik)
+        {
+             db.Korisnici.Add(noviKorisnik);
+             await db.SaveChangesAsync();
+        }
+        
 
 
 

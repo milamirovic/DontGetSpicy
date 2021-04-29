@@ -57,7 +57,7 @@ export default {
   props:["loginToken"]
   ,
   mounted(){
-      console.log(this.loginToken);
+     
             let loginConfig = { headers: {
                    Authorization: "Bearer " + this.loginToken
                  }     }

@@ -78,7 +78,7 @@ export default {
                         }
                      axios.get(`https://localhost:5001/Game/NewGame?boja=${boja}&privateGame=${privateGame}`,loginConfig)
                     .then((data) =>
-                    { 
+                    { console.log("New game data", data);
                         router.push({ name: 'Game', params:{loginToken:this.loginToken,accessCode:data.data.accessCode, gameToken:data.data.token, mojaBoja:boja, username:data.data.username, slika:data.data.slika,igraciImena:null,igraciSlike:null,privateGame:privateGame} })
                     }).catch(err =>console.log(err));
             },privateGame:true,accessCode:this.accessCode,loginToken:this.loginToken }})
@@ -93,7 +93,7 @@ export default {
                      }}
             axios.get(`https://localhost:5001/Game/JoinGame?boja=${boja}&accessCode=${accessCode}`,loginConfig)
             .then((data) =>
-            { console.log(data);
+            { console.log("Join game data", data.data);
             router.push({ name: 'Game', params:{loginToken:this.loginToken,gameToken:data.data.token,mojaBoja:boja,username:data.data.username,slika:data.data.slika,igraciImena:data.data.igraciImena,igraciSlike:data.data.igraciSlike,privateGame:privateGame} })
             }).catch(err =>
           {

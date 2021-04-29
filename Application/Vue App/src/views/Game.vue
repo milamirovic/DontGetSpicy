@@ -13,7 +13,7 @@
         <Korisnik class="zeleni" v-bind:naPotezu="naPotezu=='zeleni'" v-bind:ime="zeleniUsername" v-bind:slika="zeleniSlika"/>
         <Korisnik class="zuti" v-bind:naPotezu="naPotezu=='zuti'" v-bind:ime="zutiUsername" v-bind:slika="zutiSlika"/>
         <Korisnik class="plavi" v-bind:naPotezu="naPotezu=='plavi'" v-bind:ime="plaviUsername" v-bind:slika="plaviSlika"/>
-        <button  v-on:click="baciKocku" style="position:absolute; top:70%;left:65%;font-size:200px; width:300px; height:300px;" class="btn btn-outline-info" v-bind:class="{'disabled':!started}">{{kocka}}</button>
+        <Cube v-bind:spinCube="spinCube" v-bind:kocka="kocka" v-on:click.native="baciKocku" style="position:absolute; top:70%;left:65%;font-size:200px; width:300px; height:300px;"/>
        </div>
         
         <div v-if="!started" class="pos">
@@ -29,7 +29,7 @@
   </div>
 </template>
 
-<script>
+<script>// v-bind:class="{'disabled':!started}">{{kocka}}</button>
 import Polje from '../components/Polje';
 import {HubConnectionBuilder} from '@microsoft/signalr'
 import Korisnik from '../components/Korisnik.vue'
@@ -39,6 +39,7 @@ import Igra from "../models/igra"
 import axios from "axios"
 import router from '../router/index.js'
 import figura from '../models/figura';
+import Cube from '../components/Cube.vue';
 
 
 export default {
@@ -46,12 +47,13 @@ export default {
   components:{
     Korisnik,
     Polje,
-    Chat
+    Chat,
+    Cube
     
   },data() {
     return {
       started: false,
-      kocka:0,
+      kocka:1,
       naPotezu:Boja.naziv[0],
       crveniSlika:null,
       plaviSlika:null,
@@ -63,7 +65,8 @@ export default {
       zeleniUsername:null,
       igra:'',
       connection:"",
-      playerCount:1
+      playerCount:1,
+      spinCube:true
     }
   },
   props:["accessCode","gameToken", "mojaBoja","username","slika","igraciSlike","igraciImena","privateGame","loginToken","gameState","potez"],
@@ -126,25 +129,38 @@ export default {
 
       
       this.connection.on("kockaBacena",(vrKocke, next) =>{
+           console.log("Bacena kocka: ",vrKocke)
+           this.spinCube=false;
            this.kocka=vrKocke;
+          
+          document.querySelectorAll(".spinner img").forEach((slika, index) =>
+            {
+                let ind =index+1;
+                slika.src=require('../assets/'+ind+ind+".png");    
+            })
+
+
+            var prvi = document.querySelector(".face1>img");
+            var cetvrti=document.querySelector(".face4>img");
+            prvi.src=cetvrti.src=require('../assets/'+this.kocka+this.kocka+".png");
+           
+            document.querySelector(".spinner").classList.replace("anim0", "anim2");
+            
             if(next==true)
             {
-              this.naPotezu=Next[this.naPotezu]; return;
+               setTimeout(()=>{this.naPotezu=Next[this.naPotezu]; this.spinCube=true},1500); return;
             }
-            if(this.naPotezu==this.mojaBoja)
-           { 
-             alert("izaberite figuru");
-           }
-         
+            
+            
       }) 
       this.connection.on("figuraPomerena",(potezi, next) =>{
-          
+          console.log("Pomeri figuru: ",potezi)
           if(next==true)
            this.naPotezu=Next[this.naPotezu];
           
           this.igra.odigrajPotez({staraPozicija:potezi[0].item1,novaPozicija:potezi[0].item2}, (potezi[1]===undefined)?null:{staraPozicija:potezi[1].item1,novaPozicija:potezi[1].item2})
          
-
+        this.spinCube=true;
       }) 
      
      if(this.igraciImena!=null&&this.igraciSlike!=null) 

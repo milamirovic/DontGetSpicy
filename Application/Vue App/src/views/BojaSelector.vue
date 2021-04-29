@@ -1,7 +1,12 @@
 <template>
-    <div class="border border-info p-3 w-20 h-25"><br><br><br><br><br>
-        <h2>Select one of following colors<br><br><br><br> 
-        </h2>
+<div><br><br> <br><br> <br><br> 
+    <div class="m-auto border border-info p-5 w-25 h-75 d-flex align-items-center flex-column">
+
+        <h2>Select one of following colors</h2>
+        
+        
+        <img src="../assets/color.png" class="w-50 h-50"/>
+        <div>
         <div  class="radioDiv">
         <input type="radio" id="crveni" name="boja" value="crveni" v-model="picked" >
         <label for="crveni">Crveni</label>
@@ -17,11 +22,12 @@
         <div  class="radioDiv">
         <input type="radio" id="plavi"  name="boja" value="plavi" v-model="picked" >
         <label for="plavi">Plavi</label>
-        </div>
+        </div></div>
         <br>
-        <button class="btn btn-info" v-on:click="fun">Join</button><br>
+        <button class="btn btn-info px-5" v-on:click="fun">Join</button><br>
         <a v-on:click="cancel"><u>cancel</u></a>
         
+    </div>
     </div>
 </template>
 
@@ -71,4 +77,5 @@ export default {
     pointer-events:none;
   opacity:0.5;
 }
+
 </style>

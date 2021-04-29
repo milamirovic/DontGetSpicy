@@ -144,10 +144,8 @@ export default class Igra{
         let traziNova=(novaPozicija>0)?this.glavnaPolja:this.outPolja;
        
         let staroPolje=traziStara.find(polje=>polje.index==staraPozicija&&polje.figura!=null);
-        if(staroPolje==null) console.log("error");
-           
+        
         let novoPolje=traziNova.find(polje=>polje.index==novaPozicija);
-        if(novoPolje==null) console.log("error");
         novoPolje.figura=staroPolje.figura;
         staroPolje.figura=null;
 

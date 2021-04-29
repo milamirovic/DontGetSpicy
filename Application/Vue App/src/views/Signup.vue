@@ -4,22 +4,42 @@
     <div class="align-self-center rounder-lg d-flex flex-column align-items-center p-4">
       <!-- <img src="https://i.imgur.com/Wt7up6Q.png" class="w-25 h-25"> -->
       <img src="../assets/signupXSmall.png" class="w-50 h-50">
-      <input type="text" placeholder="email" class="input is-rounded my-2 w-75" required/>
-      <input type="text" placeholder="username" class="input is-rounded my-2 w-75" required/>
-      <input type="text" placeholder="password" class="input is-rounded my-2 w-75" required/>
-      <button type="submit" name="Signup" class="mt-3 btn btn-info w-75">Signup</button>
+      <input type="text" v-model="email" placeholder="email" class="input is-rounded my-2 w-75" required/>
+      <input type="text" v-model="username" placeholder="username" username="username" class="input is-rounded my-2 w-75" required/>
+      <input type="password" v-model="password" placeholder="password" password="password" class="input is-rounded my-2 w-75" required/>
+      <button type="submit" v-on:click="submit" name="Signup" class="mt-3 btn btn-info w-75">Signup</button>
     </div>
   </div>
 </div>
 </template>
 
 <script>
-// @ is an alias to /src
-
+import axios from "axios"
+import router from '../router/index.js'
 export default {
   name: 'Signup',
+  data() {
+    return {
+      email:null,
+      username:null,
+      password:null
+      
+    }
+  },
   components: {
+  },
+  methods:{
+    submit()
+    {
+      axios.post("https://localhost:5001/Korisnik/Signup",{email:this.email,password:this.password,username:this.username})
+        .then(() =>
+        {
+          router.push({ name: 'Login', params:{} })
+
+        }).catch(() =>alert("Already taken"));
+
   }
+}
 }
 </script>
 

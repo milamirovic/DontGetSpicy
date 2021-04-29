@@ -32,6 +32,7 @@ export default {
       axios.post("https://localhost:5001/Korisnik/Login",{email:this.username,password:this.password})
       .then(data =>
       {
+        console.log("Login data:",data.data)
         this.$emit("LoginSuccess",data);
       }).catch(err =>console.log(err));
     }

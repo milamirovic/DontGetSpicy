@@ -119,58 +119,21 @@ namespace DontGetSpicy.Controllers
             return Ok(new {igre=await KorisnikProvider.GetKorisnikPauziraneIgre(db,email)});
     
         }
-
-        /* [Route ("UpisiKorisnika")]
+        [AllowAnonymous]
+        [Route("Signup")]
         [HttpPost]
-        public async Task UpisiKorisnika([FromBody] Korisnik korisnik)
+        public async Task<IActionResult> Signup(JsonElement korisnik)
         {
-            //provera da li vec postoji
-            Context.Korisnici.Add(korisnik);
-            await Context.SaveChangesAsync();
-        }
-
-        [Route("IzmeniKorisnika")]
-        [HttpPut]
-        public async Task IzmeniKorisnika([FromBody] Korisnik korisnik)
-        {   if(Context.Korisnici.Find(korisnik)!=null)
-            {
-                Context.Update<Korisnik>(korisnik);
-                await Context.SaveChangesAsync();
-            }
+            Korisnik podaciKorisnika=JsonConvert.DeserializeObject<Korisnik>((korisnik).ToString());
+            if(await DataProvider.KorisnikProvider.postojiKorisnik(db,podaciKorisnika.username,podaciKorisnika.password))
+            return Forbid();
+            await DataProvider.KorisnikProvider.dodajKorisnika(db,podaciKorisnika);
             
-        }
-        [Route("PreuzmiKorisnike")]
-        [HttpGet]
-        public async Task<List<Korisnik>> PreuzmiKorisnike()
-        {
-            return await Context.Korisnici.Include(p=>p.mojeIgre).ToListAsync();
-            //return await Context.Korisnici.ToListAsync();
+          
+            return Ok();
         }
 
         
-
-       
-
-        [Route("IzbrisiKorisnika/{id}")]
-        [HttpDelete]
-        public async Task IzbrisiKorisnika(int id){
-            var korisnik = await Context.FindAsync<Korisnik>(id);
-            Context.Remove(korisnik);
-            await Context.SaveChangesAsync();
-        }
-
-        /*[Route("UpisiIgricu/{idKorisnika}")]
-        [HttpPost]
-        public async Task UpisiIgricu(int idKorisnika, [FromBody] Igra igrica)
-        {
-            var korisnik = await Context.Korisnici.FindAsync(idKorisnika);
-            igrica.crveniIgrac = korisnik;
-            Context.Igre.Add(igrica);
-
-            await Context.SaveChangesAsync();
-            
-        }
-        */
         
        
        
